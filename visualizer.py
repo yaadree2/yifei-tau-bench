@@ -130,7 +130,7 @@ if r:
                     else:
                         if msg["msg_content"] and not msg["fn_call_to_fn_output"]:
                             st.text(msg["msg_content"])
-                        else:
+                        elif msg["fn_call_to_fn_output"]:
                             st.write("**Tool Calls**")
                             for fn_call_dict in msg["fn_call_to_fn_output"]:
                                 new_dict = fn_call_dict["function_call"].copy()
