@@ -2,9 +2,14 @@ import json
 import os
 import redis
 from typing import Optional
+from pydantic import BaseModel
 
-KEY_PREFIX = "tau_bench:"
+class RedisSummary(BaseModel):
+    reward: int
 
+KEY_PREFIX = "tau_bench:messages:"
+
+SUMMARY_KEY_PREFIX = "tau_bench:summary:"
 
 def connect_to_redis(decode_responses):
     redis_host = os.getenv("REDIS_HOST", "localhost")
@@ -47,3 +52,13 @@ def push_to_redis(
 
     redis_key = f"{KEY_PREFIX}{uuid}:{task_id}"
     r.rpush(redis_key, json.dumps(message))
+
+
+def push_to_redis_final_reward(
+    r: redis.Redis,
+    task_id: int,
+    uuid: str,
+    reward: int,
+):
+    redis_key = f"{SUMMARY_KEY_PREFIX}{uuid}:{task_id}"
+    r.set(redis_key, RedisSummary(reward=reward).model_dump_json())

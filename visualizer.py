@@ -3,7 +3,7 @@ import json
 import time
 from datetime import datetime
 
-from redis_util import KEY_PREFIX, connect_to_redis
+from redis_util import KEY_PREFIX, SUMMARY_KEY_PREFIX, RedisSummary, connect_to_redis
 
 # --- Streamlit App Config (MUST be first Streamlit command) ---
 st.set_page_config(layout="wide", page_title="Benchmark Visualizer")
@@ -39,7 +39,7 @@ if r:
         st.header("Conversations")
         task_keys = r.keys(pattern=f"{KEY_PREFIX}*")
         uuid_to_task_id = {
-            task_key.split(":")[1]: task_key.split(":")[2] for task_key in task_keys
+            task_key.split(":")[2]: task_key.split(":")[3] for task_key in task_keys
         }
 
         if not uuid_to_task_id:
@@ -65,7 +65,20 @@ if r:
 
     # --- Main Area: Display Chat ---
     if st.session_state.selected_task_uuid is not None:
-        st.header(f"Conversation: Task {st.session_state.selected_task_uuid}")
+        summary_redis_key_prefix = f"{SUMMARY_KEY_PREFIX}{st.session_state.selected_task_uuid}"
+        target_keys = r.keys(pattern=f"{summary_redis_key_prefix}:*")
+        if target_keys:
+            summary_key = target_keys[0]
+            data = json.loads(r.get(summary_key))
+            summary = RedisSummary(**data) if data else None
+        else:
+            summary = None
+
+        if summary:
+            st.header(f"Task {st.session_state.selected_task_uuid}, Reward: {summary.reward}")
+        else:
+            st.header(f"Task {st.session_state.selected_task_uuid}")
+
         try:
             redis_key_prefix = f"{KEY_PREFIX}{st.session_state.selected_task_uuid}"
             # Fetch messages, limiting the number fetched initially
