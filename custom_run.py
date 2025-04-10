@@ -1,6 +1,7 @@
 import argparse
 
 import logfire
+from redis_util import connect_to_redis
 from tau_bench.agents.tool_calling_agent import *  # noqa: F403, F401
 from tau_bench.envs.base import *  # noqa: F403, F401
 from tau_bench.run import run
@@ -17,6 +18,12 @@ import dotenv
 dotenv.load_dotenv()
 
 
+def clear_redis():
+    r = connect_to_redis(decode_responses=True)
+    r.flushdb()  # Removes all keys from the current database
+    r.close()
+
+
 def run_with_defaults(args) -> None:
     """
     Wrapper to run the benchmark with sensible defaults
@@ -25,6 +32,9 @@ def run_with_defaults(args) -> None:
     logfire.configure(scrubbing=False, console=False)
     model_provider = get_default_model_provider_for_model_name(args.model)
     ModelClient.initialize()
+
+    clear_redis()
+
     config = RunConfig(
         model_provider=str(model_provider).lower(),
         user_model_provider="openrouter",

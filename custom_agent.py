@@ -5,6 +5,12 @@ from typing import Optional
 
 import logfire
 from deepdiff import DeepDiff
+from redis_util import (
+    connect_to_redis,
+    push_assistant_to_redis,
+    push_reward_to_redis,
+    push_user_to_redis,
+)
 from tau_bench.agents.tool_calling_agent import ToolCallingAgent
 from tau_bench.envs.base import Env
 from tau_bench.types import RESPOND_ACTION_NAME, Action, SolveResult
@@ -18,6 +24,18 @@ from tau_benchmark.util import BLACKLISTED_TOOLS, TURN_TYPES
 from pydantic_evals.otel._context_in_memory_span_exporter import context_subtree
 import json
 from cashier.model.cost import compute_token_cost
+import uuid
+
+USED_IDS = set()
+
+
+def generate_unique_id():
+    while True:
+        new_id = str(uuid.uuid4())
+        if new_id not in USED_IDS:
+            USED_IDS.add(new_id)
+            return new_id
+
 
 WRITE_TOOL_NAMES = [
     "update_reservation_baggages",
@@ -144,6 +162,9 @@ class CustomToolCallingAgent(ToolCallingAgent):
     def solve(
         self, env: Env, task_index: Optional[int] = None, max_num_steps: int = 160
     ) -> SolveResult:
+        redis_conn = connect_to_redis(False)
+        UUID = generate_unique_id()
+
         user_model = env.user.model
         expected_task_actions = env.task.actions
         expected_task_action_names = [action.name for action in expected_task_actions]
@@ -168,6 +189,7 @@ class CustomToolCallingAgent(ToolCallingAgent):
             task_index=task_index,
             ass_model=self.model,
             user_model=user_model,
+            uuid=UUID,
         ) as span:
             with context_subtree() as tree:
                 env_reset_res = env.reset(task_index=task_index)
@@ -184,6 +206,8 @@ class CustomToolCallingAgent(ToolCallingAgent):
                 AE.graph.blacklist_tool_names = BLACKLISTED_TOOLS
 
                 AE.add_user_turn(obs)
+                push_user_to_redis(redis_conn, task_index, UUID, obs)
+
                 full_message_dicts = AE.TC.model_api_format_to_message_manager[
                     (ModelAPI.OPENAI, MessageFormat.MANY_SYSTEM_LAST_NODE_PROMPT)
                 ].full_message_dicts
@@ -192,6 +216,9 @@ class CustomToolCallingAgent(ToolCallingAgent):
                         model_completion = self.get_model_completion(AE)
                         action = message_to_action(model_completion)
                         AE.add_assistant_turn(model_completion)
+                        push_assistant_to_redis(
+                            redis_conn, task_index, UUID, AE.get_redis_assistant_turns()
+                        )
 
                         need_user_input = AE.need_user_input
                         env_response = env.step(
@@ -204,6 +231,12 @@ class CustomToolCallingAgent(ToolCallingAgent):
 
                         if need_user_input:
                             AE.add_user_turn(env_response.observation)
+                            push_user_to_redis(
+                                redis_conn,
+                                task_index,
+                                UUID,
+                                env_response.observation,
+                            )
                         else:
                             AE.custom_benchmark_check()
 
@@ -227,6 +260,8 @@ class CustomToolCallingAgent(ToolCallingAgent):
                         user_model,
                         task_index,
                     )
+
+                    push_reward_to_redis(redis_conn, UUID, reward)
 
             total_cost, total_user_cost = compute_cost_attributes(tree, span)
 
