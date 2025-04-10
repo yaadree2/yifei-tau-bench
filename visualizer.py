@@ -19,7 +19,6 @@ MAX_MESSAGES_DISPLAY = (
 )
 
 
-# --- Redis Connection ---
 @st.cache_resource
 def get_redis_connection():
     return connect_to_redis(True)
@@ -65,24 +64,23 @@ if r:
             if not uuid_to_task_id:
                 st.write("No active conversations found.")
             else:
-                # Ensure stable order and find the index of the current selection
                 available_uuids = list(uuid_to_task_id.keys())
-                current_selection_index = None
+                radio_selection_index = None
                 if st.session_state.selected_task_uuid in available_uuids:
                     try:
-                        current_selection_index = available_uuids.index(
+                        radio_selection_index = available_uuids.index(
                             st.session_state.selected_task_uuid
                         )
                     except ValueError:
                         # Should not happen if the check above passes, but handle defensively
-                        current_selection_index = None
+                        radio_selection_index = None
 
                 # Display task IDs as radio buttons
                 selected_task_uuid = st.radio(
                     "Select Task ID:",
                     options=available_uuids,  # Use the list with stable order
                     key="task_selector",
-                    index=current_selection_index,  # Set index explicitly
+                    index=radio_selection_index,  # Set index explicitly
                     format_func=format_func,
                     label_visibility="collapsed",
                 )
