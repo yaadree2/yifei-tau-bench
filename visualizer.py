@@ -44,6 +44,21 @@ if r:
             task_key.split(":")[2]: task_key.split(":")[3] for task_key in task_keys
         }
 
+        summary_keys = r.keys(pattern=f"{SUMMARY_KEY_PREFIX}*")
+        summary_values = r.mget(summary_keys)
+        summary_key_to_value = {
+            key.split(":")[2]: RedisSummary(**json.loads(value)) if value else None
+            for key, value in zip(summary_keys, summary_values)
+        }
+
+        def format_func(uuid):
+            summary_value = summary_key_to_value.get(uuid, None)
+            if summary_value:
+                return f"Task ID {uuid_to_task_id[uuid]}, {uuid[-6:]}, reward: {summary_value.reward}"
+            else:
+                return f"Task ID {uuid_to_task_id[uuid]}, {uuid[-6:]}"
+
+
         if not uuid_to_task_id:
             st.write("No active conversations found.")
         else:
@@ -53,7 +68,7 @@ if r:
                 options=uuid_to_task_id.keys(),
                 key="task_selector",
                 index=None,  # Default to no selection
-                format_func=lambda uuid: f"Task ID {uuid_to_task_id[uuid]}, {uuid[-6:]}",
+                format_func=format_func,
                 label_visibility="collapsed",
             )
 
