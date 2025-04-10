@@ -5,7 +5,7 @@ from typing import Optional
 
 import logfire
 from deepdiff import DeepDiff
-from redis_util import connect_to_redis, push_to_redis, push_to_redis_final_reward
+from redis_util import connect_to_redis, push_assistant_to_redis, push_to_redis, push_to_redis_final_reward
 from tau_bench.agents.tool_calling_agent import ToolCallingAgent
 from tau_bench.envs.base import Env
 from tau_bench.types import RESPOND_ACTION_NAME, Action, SolveResult
@@ -210,20 +210,11 @@ class CustomToolCallingAgent(ToolCallingAgent):
                         model_completion = self.get_model_completion(AE)
                         action = message_to_action(model_completion)
                         AE.add_assistant_turn(model_completion)
-                        assistant_content = model_completion.get_or_stream_message()
-                        assistant_tool_calls = [
-                            fn_call
-                            for fn_call in model_completion.get_or_stream_fn_calls()
-                        ]
-                        push_to_redis(
+                        push_assistant_to_redis(
                             redis_conn,
                             task_index,
                             UUID,
-                            "assistant",
-                            content=assistant_content,
-                            tool_calls=(
-                                assistant_tool_calls if assistant_tool_calls else None
-                            ),
+                            AE.get_redis_assistant_turns()
                         )
 
                         need_user_input = AE.need_user_input

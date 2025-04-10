@@ -3,6 +3,7 @@ import os
 import redis
 from typing import Optional
 from pydantic import BaseModel
+from cashier.model.model_util import CustomJSONEncoder
 
 class RedisSummary(BaseModel):
     reward: int
@@ -24,6 +25,15 @@ def connect_to_redis(decode_responses):
 
     return r
 
+
+def push_assistant_to_redis(
+    r: redis.Redis,
+    task_id: int,
+    uuid: str,
+    assistant_turns,
+):    
+    redis_key = f"{MESSAGES_KEY_PREFIX}{uuid}:{task_id}"
+    r.rpush(redis_key, json.dumps(assistant_turns, cls=CustomJSONEncoder))
 
 def push_to_redis(
     r: redis.Redis,

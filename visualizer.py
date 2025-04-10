@@ -2,6 +2,7 @@ import streamlit as st
 import json
 import time
 from datetime import datetime
+from cashier.model.model_turn import AssistantTurn
 
 from redis_util import MESSAGES_KEY_PREFIX, SUMMARY_KEY_PREFIX, RedisSummary, connect_to_redis
 
@@ -107,18 +108,33 @@ if r:
             )  # Use a container for potentially better scrolling/height control
             with chat_container:
                 for msg in messages:
-                    role = msg.get("role", "unknown")
+                    role = msg.get("role", 'assistant')
+                    if role == 'assistant':
+                        assistant_turn = AssistantTurn(**msg)
                     with st.chat_message(role):
-                        if "content" in msg and msg["content"]:
+                        if role == 'user':
                             st.text(msg["content"])
-                        if "tool_calls" in msg and msg["tool_calls"]:
-                            st.write("Tool Calls:")
-                            st.json(msg["tool_calls"])
-                        elif (
-                            "tool_results" in msg and msg["tool_results"]
-                        ):  # Assuming you might log tool results too
-                            st.write(f"Tool Result ({msg.get('tool_name', 'N/A')}):")
-                            st.json(msg["tool_results"])
+                        else:
+                            if assistant_turn.msg_content and not assistant_turn.fn_call_to_fn_output:
+                                st.text(assistant_turn.msg_content)
+                            else:
+                                st.write("Tool Calls:")
+                                for fn_call in assistant_turn.fn_call_to_fn_output:
+                                    fn_call_dict = {
+                                        "name": fn_call.name,
+                                        "api_id": fn_call.api_id,
+                                        "args": fn_call.args
+                                    }
+                                    st.json(fn_call_dict)
+
+                                st.write("Tool Results:")
+                                for fn_call, fn_output in assistant_turn.fn_call_to_fn_output.items():
+                                    fn_output_dict = {
+                                        "name": fn_call.name,
+                                        "api_id": fn_call.api_id,
+                                        "output": fn_output
+                                    }
+                                    st.json(fn_output_dict)
 
         except Exception as e:
             st.error(f"An error occurred displaying messages: {e}")
