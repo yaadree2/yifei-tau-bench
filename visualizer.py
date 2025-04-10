@@ -81,7 +81,6 @@ if r:
                 ):
                     st.session_state.selected_task_uuid = selected_task_uuid
                     st.session_state.selected_task_id = uuid_to_task_id[selected_task_uuid]
-                    st.session_state.last_task_switch_time = time.time()
                     st.rerun()  # Rerun immediately on selection change
 
         display_sidebar()
