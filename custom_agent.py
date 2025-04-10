@@ -20,13 +20,6 @@ from tau_benchmark.util import BLACKLISTED_TOOLS, TURN_TYPES
 from pydantic_evals.otel._context_in_memory_span_exporter import context_subtree
 import json
 from cashier.model.cost import compute_token_cost
-import os
-
-# --- Redis Configuration ---
-# Use environment variables or defaults
-REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
-REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
-# --- End Redis Configuration ---
 
 WRITE_TOOL_NAMES = [
     "update_reservation_baggages",
