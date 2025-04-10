@@ -391,14 +391,10 @@ def message_to_action(model_completion) -> Action:
     for fn_call in model_completion.get_or_stream_fn_calls():
         fn_calls.append(fn_call)
     if fn_calls:
-        # Ensure args are serializable if they are Pydantic models
-        serializable_args = fn_calls[0].args
-        if hasattr(serializable_args, "model_dump"):
-            serializable_args = serializable_args.model_dump()
         return Action(
             name=fn_calls[0].name,
-            kwargs=serializable_args,  # Use potentially serialized args
-            fn_calls=fn_calls,  # Keep original fn_calls for internal use
+            kwargs=fn_calls[0].args,
+            fn_calls=fn_calls,
         )
     else:
         return Action(
