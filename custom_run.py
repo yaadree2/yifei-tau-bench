@@ -1,8 +1,7 @@
 import argparse
 
 import logfire
-import redis
-import os
+from redis_util import connect_to_redis
 from tau_bench.agents.tool_calling_agent import *  # noqa: F403, F401
 from tau_bench.envs.base import *  # noqa: F403, F401
 from tau_bench.run import run
@@ -20,14 +19,9 @@ dotenv.load_dotenv()
 
 def cleanup_redis():
     try:
-        redis_host = os.getenv("REDIS_HOST", "localhost")
-        redis_port = int(os.getenv("REDIS_PORT", 6379))
-        r = redis.Redis(host=redis_host, port=redis_port, decode_responses=True, socket_connect_timeout=1)
-        r.ping()
+        r = connect_to_redis(decode_responses=True)
         r.flushdb() # Removes all keys from the current database
         r.close()
-    except redis.exceptions.ConnectionError as e:
-        print(f"Could not connect to Redis to clear data: {e}. Old data might persist in visualizer.")
     except Exception as e:
         print(f"An error occurred while clearing Redis data: {e}")
 
