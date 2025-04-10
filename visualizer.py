@@ -31,6 +31,8 @@ if r:
     # --- Session State Initialization ---
     if "selected_task_uuid" not in st.session_state:
         st.session_state.selected_task_uuid = None
+    if "selected_task_id" not in st.session_state:
+        st.session_state.selected_task_id = None
     if "last_refresh_time" not in st.session_state:
         st.session_state.last_refresh_time = datetime.now()
 
@@ -61,6 +63,7 @@ if r:
                 and st.session_state.selected_task_uuid != selected_task_uuid
             ):
                 st.session_state.selected_task_uuid = selected_task_uuid
+                st.session_state.selected_task_id = uuid_to_task_id[selected_task_uuid]
                 st.rerun()  # Rerun immediately on selection change
 
     # --- Main Area: Display Chat ---
@@ -79,11 +82,8 @@ if r:
             st.header(f"Task {st.session_state.selected_task_uuid}")
 
         try:
-            redis_key_prefix = f"{MESSAGES_KEY_PREFIX}{st.session_state.selected_task_uuid}"
-            # Fetch messages, limiting the number fetched initially
-            [redis_key] = r.keys(pattern=f"{redis_key_prefix}:*")
             messages_json = r.lrange(
-                redis_key, -MAX_MESSAGES_DISPLAY, -1
+                f"{MESSAGES_KEY_PREFIX}{st.session_state.selected_task_uuid}:{st.session_state.selected_task_id}", -MAX_MESSAGES_DISPLAY, -1
             )  # Get latest N messages
             messages = [json.loads(m) for m in messages_json]
 
