@@ -37,37 +37,29 @@ if r:
     # --- Sidebar: List Conversations ---
     with st.sidebar:
         st.header("Conversations")
-        try:
-            task_keys = r.keys(pattern=f"{KEY_PREFIX}*")
-            uuid_to_task_id = {
-                task_key.split(":")[1]: task_key.split(":")[2]
-                for task_key in task_keys
-            }
+        task_keys = r.keys(pattern=f"{KEY_PREFIX}*")
+        uuid_to_task_id = {
+            task_key.split(":")[1]: task_key.split(":")[2]
+            for task_key in task_keys
+        }
 
-            if not uuid_to_task_id:
-                st.write("No active conversations found.")
-            else:
-                # Display task IDs as radio buttons
-                selected_task_uuid = st.radio(
-                    "Select Task ID:",
-                    options = uuid_to_task_id.keys(),
-                    key="task_selector",
-                    index=None,  # Default to no selection
-                    format_func=lambda uuid: f"Task ID {uuid_to_task_id[uuid]}, {uuid[-6:]}",
-                    label_visibility="collapsed",
-                )
+        if not uuid_to_task_id:
+            st.write("No active conversations found.")
+        else:
+            # Display task IDs as radio buttons
+            selected_task_uuid = st.radio(
+                "Select Task ID:",
+                options = uuid_to_task_id.keys(),
+                key="task_selector",
+                index=None,  # Default to no selection
+                format_func=lambda uuid: f"Task ID {uuid_to_task_id[uuid]}, {uuid[-6:]}",
+                label_visibility="collapsed",
+            )
 
-                # Update session state if selection changes
-                if selected_task_uuid and st.session_state.selected_task_uuid != selected_task_uuid:
-                    st.session_state.selected_task_uuid = selected_task_uuid
-                    st.rerun()  # Rerun immediately on selection change
-
-        except redis.exceptions.ConnectionError:
-            st.error("Redis connection lost.")
-            task_ids = []
-        except Exception as e:
-            st.error(f"Error fetching task list: {e}")
-            task_ids = []
+            # Update session state if selection changes
+            if selected_task_uuid and st.session_state.selected_task_uuid != selected_task_uuid:
+                st.session_state.selected_task_uuid = selected_task_uuid
+                st.rerun()  # Rerun immediately on selection change
 
     # --- Main Area: Display Chat ---
     if st.session_state.selected_task_uuid is not None:
