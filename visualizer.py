@@ -118,8 +118,9 @@ if r:
                             else:
                                 st.write("**Tool Calls**")
                                 for fn_call_dict in msg['fn_call_to_fn_output']:
-                                    st.json(fn_call_dict['function_call'])
-                                    st.json(fn_call_dict['value'])
+                                    new_dict = fn_call_dict['function_call'].copy()
+                                    new_dict['output'] = fn_call_dict['value']
+                                    st.json(new_dict)
                                     st.divider()
         except Exception as e:
             st.error(f"An error occurred displaying messages: {e}")
