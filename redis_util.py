@@ -33,7 +33,8 @@ def push_assistant_to_redis(
     assistant_turns,
 ):    
     redis_key = f"{MESSAGES_KEY_PREFIX}{uuid}:{task_id}"
-    r.rpush(redis_key, json.dumps(assistant_turns, cls=CustomJSONEncoder))
+    for turn in assistant_turns:
+        r.rpush(redis_key, json.dumps(turn, cls=CustomJSONEncoder))
 
 def push_to_redis(
     r: redis.Redis,
