@@ -24,12 +24,7 @@ def cleanup_redis():
         redis_port = int(os.getenv("REDIS_PORT", 6379))
         r = redis.Redis(host=redis_host, port=redis_port, decode_responses=True, socket_connect_timeout=1)
         r.ping()
-        print(f"Connected to Redis at {redis_host}:{redis_port} to clear old data.")
-        # --- Wipe the current Redis DB ---
-        print("Wiping current Redis database (FLUSHDB)...")
         r.flushdb() # Removes all keys from the current database
-        print("Redis database wiped.")
-        # --- End Wipe ---
         r.close()
     except redis.exceptions.ConnectionError as e:
         print(f"Could not connect to Redis to clear data: {e}. Old data might persist in visualizer.")
