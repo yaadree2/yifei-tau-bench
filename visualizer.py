@@ -91,10 +91,6 @@ if r:
                             st.write(f"Tool Result ({msg.get('tool_name', 'N/A')}):")
                             st.json(msg["tool_results"])
 
-        except redis.exceptions.ConnectionError:
-            st.error("Redis connection lost.")
-        except json.JSONDecodeError as e:
-            st.error(f"Error decoding message data from Redis: {e}")
         except Exception as e:
             st.error(f"An error occurred displaying messages: {e}")
     else:
