@@ -30,7 +30,7 @@ st.title("Conversational Benchmark Visualizer")
 if r:
     # --- Session State Initialization ---
     if "selected_task_id" not in st.session_state:
-        st.session_state.selected_task_id = None
+        st.session_state.selected_task_uuid = None
     if "last_refresh_time" not in st.session_state:
         st.session_state.last_refresh_time = datetime.now()
 
@@ -48,19 +48,18 @@ if r:
                 st.write("No active conversations found.")
             else:
                 # Display task IDs as radio buttons
-                selected_task_id_str = st.radio(
+                selected_task_uuid = st.radio(
                     "Select Task ID:",
-                    options = [ f"Task ID {str(task_id)}, {uuid[-6:]}" for uuid, task_id in uuid_to_task_id.items()],
+                    options = uuid_to_task_id.keys(),
                     key="task_selector",
                     index=None,  # Default to no selection
+                    format_func=lambda uuid: f"Task ID {uuid_to_task_id[uuid]}, {uuid[-6:]}",
                     label_visibility="collapsed",
                 )
 
                 # Update session state if selection changes
-                if selected_task_id_str and st.session_state.selected_task_id != int(
-                    selected_task_id_str
-                ):
-                    st.session_state.selected_task_id = int(selected_task_id_str)
+                if selected_task_uuid and st.session_state.selected_task_uuid != selected_task_uuid:
+                    st.session_state.selected_task_uuid = selected_task_uuid
                     st.rerun()  # Rerun immediately on selection change
 
         except redis.exceptions.ConnectionError:
@@ -71,11 +70,12 @@ if r:
             task_ids = []
 
     # --- Main Area: Display Chat ---
-    if st.session_state.selected_task_id is not None:
-        st.header(f"Conversation: Task {st.session_state.selected_task_id}")
+    if st.session_state.selected_task_uuid is not None:
+        st.header(f"Conversation: Task {st.session_state.selected_task_uuid}")
         try:
-            redis_key = f"{KEY_PREFIX}{st.session_state.selected_task_id}"
+            redis_key_prefix = f"{KEY_PREFIX}{st.session_state.selected_task_uuid}"
             # Fetch messages, limiting the number fetched initially
+            [redis_key] = r.keys(pattern=f"{redis_key_prefix}:*")
             messages_json = r.lrange(
                 redis_key, -MAX_MESSAGES_DISPLAY, -1
             )  # Get latest N messages
