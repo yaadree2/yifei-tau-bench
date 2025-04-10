@@ -18,13 +18,10 @@ import dotenv
 dotenv.load_dotenv()
 
 
-def cleanup_redis():
-    try:
-        r = connect_to_redis(decode_responses=True)
-        r.flushdb()  # Removes all keys from the current database
-        r.close()
-    except Exception as e:
-        print(f"An error occurred while clearing Redis data: {e}")
+def clear_redis():
+    r = connect_to_redis(decode_responses=True)
+    r.flushdb()  # Removes all keys from the current database
+    r.close()
 
 
 def run_with_defaults(args) -> None:
@@ -36,7 +33,7 @@ def run_with_defaults(args) -> None:
     model_provider = get_default_model_provider_for_model_name(args.model)
     ModelClient.initialize()
 
-    cleanup_redis()
+    clear_redis()
 
     config = RunConfig(
         model_provider=str(model_provider).lower(),
