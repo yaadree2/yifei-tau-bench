@@ -4,6 +4,10 @@ import json
 import time
 from datetime import datetime
 
+# --- Streamlit App Config (MUST be first Streamlit command) ---
+st.set_page_config(layout="wide", page_title="Benchmark Visualizer")
+# ---
+
 # --- Configuration ---
 REDIS_HOST = "localhost"
 REDIS_PORT = 6379
@@ -27,7 +31,6 @@ def get_redis_connection():
 r = get_redis_connection()
 
 # --- Streamlit App ---
-st.set_page_config(layout="wide", page_title="Benchmark Visualizer")
 st.title("Conversational Benchmark Visualizer")
 
 if r:
