@@ -35,18 +35,11 @@ def run_with_defaults(args) -> None:
         r = redis.Redis(host=redis_host, port=redis_port, decode_responses=True, socket_connect_timeout=1)
         r.ping()
         print(f"Connected to Redis at {redis_host}:{redis_port} to clear old data.")
-        # Delete keys matching the pattern 'conversation:*'
-        keys_to_delete = []
-        cursor = '0'
-        while cursor != 0:
-            cursor, keys = r.scan(cursor=cursor, match="conversation:*", count=500)
-            keys_to_delete.extend(keys)
-        
-        if keys_to_delete:
-            print(f"Deleting {len(keys_to_delete)} old conversation keys from Redis...")
-            r.delete(*keys_to_delete)
-        else:
-            print("No old conversation keys found in Redis.")
+        # --- Wipe the current Redis DB ---
+        print("Wiping current Redis database (FLUSHDB)...")
+        r.flushdb() # Removes all keys from the current database
+        print("Redis database wiped.")
+        # --- End Wipe ---
         r.close()
     except redis.exceptions.ConnectionError as e:
         print(f"Could not connect to Redis to clear data: {e}. Old data might persist in visualizer.")
