@@ -25,7 +25,7 @@ def get_redis_connection():
 r = get_redis_connection()
 
 # --- Streamlit App ---
-st.title("Conversational Benchmark Visualizer")
+st.title("tau-bench Benchmark")
 
 if r:
     # --- Session State Initialization ---
