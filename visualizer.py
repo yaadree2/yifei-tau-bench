@@ -3,7 +3,7 @@ import json
 import time
 from datetime import datetime
 
-from redis_util import KEY_PREFIX, SUMMARY_KEY_PREFIX, RedisSummary, connect_to_redis
+from redis_util import MESSAGES_KEY_PREFIX, SUMMARY_KEY_PREFIX, RedisSummary, connect_to_redis
 
 # --- Streamlit App Config (MUST be first Streamlit command) ---
 st.set_page_config(layout="wide", page_title="Benchmark Visualizer")
@@ -37,7 +37,7 @@ if r:
     # --- Sidebar: List Conversations ---
     with st.sidebar:
         st.header("Conversations")
-        task_keys = r.keys(pattern=f"{KEY_PREFIX}*")
+        task_keys = r.keys(pattern=f"{MESSAGES_KEY_PREFIX}*")
         uuid_to_task_id = {
             task_key.split(":")[2]: task_key.split(":")[3] for task_key in task_keys
         }
@@ -80,7 +80,7 @@ if r:
             st.header(f"Task {st.session_state.selected_task_uuid}")
 
         try:
-            redis_key_prefix = f"{KEY_PREFIX}{st.session_state.selected_task_uuid}"
+            redis_key_prefix = f"{MESSAGES_KEY_PREFIX}{st.session_state.selected_task_uuid}"
             # Fetch messages, limiting the number fetched initially
             [redis_key] = r.keys(pattern=f"{redis_key_prefix}:*")
             messages_json = r.lrange(

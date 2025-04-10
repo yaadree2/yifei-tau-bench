@@ -7,7 +7,7 @@ from pydantic import BaseModel
 class RedisSummary(BaseModel):
     reward: int
 
-KEY_PREFIX = "tau_bench:messages:"
+MESSAGES_KEY_PREFIX = "tau_bench:messages:"
 
 SUMMARY_KEY_PREFIX = "tau_bench:summary:"
 
@@ -50,7 +50,7 @@ def push_to_redis(
         if tool_name:
             message["tool_name"] = tool_name
 
-    redis_key = f"{KEY_PREFIX}{uuid}:{task_id}"
+    redis_key = f"{MESSAGES_KEY_PREFIX}{uuid}:{task_id}"
     r.rpush(redis_key, json.dumps(message))
 
 
