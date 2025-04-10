@@ -127,7 +127,9 @@ if r:
                             st.text(msg["msg_content"])
                         elif msg["fn_call_to_fn_output"]:
                             st.write("**Tool Calls**")
-                            for i, fn_call_dict in enumerate(msg["fn_call_to_fn_output"]):
+                            for i, fn_call_dict in enumerate(
+                                msg["fn_call_to_fn_output"]
+                            ):
                                 new_dict = fn_call_dict["function_call"].copy()
                                 new_dict.pop("input_args_json")
                                 new_dict.pop("source_provider")
