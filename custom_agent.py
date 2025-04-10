@@ -22,12 +22,15 @@ from cashier.model.cost import compute_token_cost
 import uuid
 
 USED_IDS = set()
+
+
 def generate_unique_id():
     while True:
         new_id = str(uuid.uuid4())
         if new_id not in USED_IDS:
             USED_IDS.add(new_id)
             return new_id
+
 
 WRITE_TOOL_NAMES = [
     "update_reservation_baggages",

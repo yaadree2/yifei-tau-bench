@@ -5,6 +5,7 @@ from typing import Optional
 
 KEY_PREFIX = "tau_bench:"
 
+
 def connect_to_redis(decode_responses):
     redis_host = os.getenv("REDIS_HOST", "localhost")
     redis_port = int(os.getenv("REDIS_PORT", 6379))

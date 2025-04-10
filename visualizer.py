@@ -19,8 +19,9 @@ MAX_MESSAGES_DISPLAY = (
 
 # --- Redis Connection ---
 @st.cache_resource
-def get_redis_connection():    
+def get_redis_connection():
     return connect_to_redis(True)
+
 
 r = get_redis_connection()
 
@@ -39,8 +40,7 @@ if r:
         st.header("Conversations")
         task_keys = r.keys(pattern=f"{KEY_PREFIX}*")
         uuid_to_task_id = {
-            task_key.split(":")[1]: task_key.split(":")[2]
-            for task_key in task_keys
+            task_key.split(":")[1]: task_key.split(":")[2] for task_key in task_keys
         }
 
         if not uuid_to_task_id:
@@ -49,7 +49,7 @@ if r:
             # Display task IDs as radio buttons
             selected_task_uuid = st.radio(
                 "Select Task ID:",
-                options = uuid_to_task_id.keys(),
+                options=uuid_to_task_id.keys(),
                 key="task_selector",
                 index=None,  # Default to no selection
                 format_func=lambda uuid: f"Task ID {uuid_to_task_id[uuid]}, {uuid[-6:]}",
@@ -57,7 +57,10 @@ if r:
             )
 
             # Update session state if selection changes
-            if selected_task_uuid and st.session_state.selected_task_uuid != selected_task_uuid:
+            if (
+                selected_task_uuid
+                and st.session_state.selected_task_uuid != selected_task_uuid
+            ):
                 st.session_state.selected_task_uuid = selected_task_uuid
                 st.rerun()  # Rerun immediately on selection change
 
