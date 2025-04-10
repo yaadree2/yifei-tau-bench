@@ -22,6 +22,7 @@ def connect_to_redis(decode_responses):
 def push_to_redis(
     r: redis.Redis,
     task_id: int,
+    uuid: str,
     role: str,
     content: Optional[str] = None,
     tool_calls: Optional[list] = None,
@@ -43,5 +44,5 @@ def push_to_redis(
         if tool_name:
             message["tool_name"] = tool_name
 
-    redis_key = f"{KEY_PREFIX}{task_id}"
+    redis_key = f"{KEY_PREFIX}{uuid}:{task_id}"
     r.rpush(redis_key, json.dumps(message))

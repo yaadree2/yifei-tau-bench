@@ -38,28 +38,19 @@ if r:
     with st.sidebar:
         st.header("Conversations")
         try:
-            # Fetch active task keys from Redis
-            # Using SCAN for potentially large number of keys is better than KEYS
             task_keys = r.keys(pattern=f"{KEY_PREFIX}*")
+            uuid_to_task_id = {
+                task_key.split(":")[1]: task_key.split(":")[2]
+                for task_key in task_keys
+            }
 
-            # Extract task IDs and sort them
-            # Filter out potential non-integer IDs if the key format is misused
-            task_ids = sorted(
-                [
-                    int(key.split(":")[1])
-                    for key in task_keys
-                    if key.split(":")[1].isdigit()
-                ],
-                key=int,
-            )
-
-            if not task_ids:
+            if not uuid_to_task_id:
                 st.write("No active conversations found.")
             else:
                 # Display task IDs as radio buttons
                 selected_task_id_str = st.radio(
                     "Select Task ID:",
-                    options=[str(tid) for tid in task_ids],
+                    options = [ f"Task ID {str(task_id)}, {uuid[-6:]}" for uuid, task_id in uuid_to_task_id.items()],
                     key="task_selector",
                     index=None,  # Default to no selection
                     label_visibility="collapsed",

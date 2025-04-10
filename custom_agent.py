@@ -19,6 +19,15 @@ from tau_benchmark.util import BLACKLISTED_TOOLS, TURN_TYPES
 from pydantic_evals.otel._context_in_memory_span_exporter import context_subtree
 import json
 from cashier.model.cost import compute_token_cost
+import uuid
+
+USED_IDS = set()
+def generate_unique_id():
+    while True:
+        new_id = str(uuid.uuid4())
+        if new_id not in USED_IDS:
+            USED_IDS.add(new_id)
+            return new_id
 
 WRITE_TOOL_NAMES = [
     "update_reservation_baggages",
@@ -146,6 +155,7 @@ class CustomToolCallingAgent(ToolCallingAgent):
         self, env: Env, task_index: Optional[int] = None, max_num_steps: int = 160
     ) -> SolveResult:
         redis_conn = connect_to_redis(False)
+        UUID = generate_unique_id()
 
         user_model = env.user.model
         expected_task_actions = env.task.actions
@@ -188,7 +198,7 @@ class CustomToolCallingAgent(ToolCallingAgent):
 
                 AE.add_user_turn(obs)
                 # --- Push initial user message ---
-                push_to_redis(redis_conn, task_index, "user", content=obs)
+                push_to_redis(redis_conn, task_index, UUID, "user", content=obs)
                 # ---
 
                 full_message_dicts = AE.TC.model_api_format_to_message_manager[
@@ -208,6 +218,7 @@ class CustomToolCallingAgent(ToolCallingAgent):
                         push_to_redis(
                             redis_conn,
                             task_index,
+                            UUID,
                             "assistant",
                             content=assistant_content,
                             tool_calls=(
@@ -231,6 +242,7 @@ class CustomToolCallingAgent(ToolCallingAgent):
                             push_to_redis(
                                 redis_conn,
                                 task_index,
+                                UUID,
                                 "user",
                                 content=env_response.observation,
                             )
