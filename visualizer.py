@@ -65,12 +65,11 @@ if r:
 
     # --- Main Area: Display Chat ---
     if st.session_state.selected_task_uuid is not None:
-        summary_redis_key_prefix = f"{SUMMARY_KEY_PREFIX}{st.session_state.selected_task_uuid}"
-        target_keys = r.keys(pattern=f"{summary_redis_key_prefix}:*")
-        if target_keys:
-            summary_key = target_keys[0]
-            data = json.loads(r.get(summary_key))
-            summary = RedisSummary(**data) if data else None
+        summary_redis_key = f"{SUMMARY_KEY_PREFIX}{st.session_state.selected_task_uuid}"
+        json_data = r.get(summary_redis_key)
+        if json_data:
+            data = json.loads(r.get(summary_redis_key))
+            summary = RedisSummary(**data)
         else:
             summary = None
 

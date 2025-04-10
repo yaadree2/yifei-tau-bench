@@ -268,7 +268,7 @@ class CustomToolCallingAgent(ToolCallingAgent):
                         task_index,
                     )
 
-                    push_to_redis_final_reward(redis_conn, task_index, UUID, reward)
+                    push_to_redis_final_reward(redis_conn, UUID, reward)
 
             total_cost, total_user_cost = compute_cost_attributes(tree, span)
 

@@ -56,9 +56,8 @@ def push_to_redis(
 
 def push_to_redis_final_reward(
     r: redis.Redis,
-    task_id: int,
     uuid: str,
     reward: int,
 ):
-    redis_key = f"{SUMMARY_KEY_PREFIX}{uuid}:{task_id}"
+    redis_key = f"{SUMMARY_KEY_PREFIX}{uuid}"
     r.set(redis_key, RedisSummary(reward=reward).model_dump_json())
