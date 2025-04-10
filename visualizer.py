@@ -1,8 +1,5 @@
 import streamlit as st
 import json
-import time
-from datetime import datetime
-from cashier.model.model_turn import AssistantTurn
 
 from redis_util import (
     MESSAGES_KEY_PREFIX,
@@ -22,7 +19,6 @@ MAX_MESSAGES_DISPLAY = (
 )
 
 
-# --- Redis Connection ---
 @st.cache_resource
 def get_redis_connection():
     return connect_to_redis(True)
@@ -68,24 +64,23 @@ if r:
             if not uuid_to_task_id:
                 st.write("No active conversations found.")
             else:
-                # Ensure stable order and find the index of the current selection
                 available_uuids = list(uuid_to_task_id.keys())
-                current_selection_index = None
+                radio_selection_index = None
                 if st.session_state.selected_task_uuid in available_uuids:
                     try:
-                        current_selection_index = available_uuids.index(
+                        radio_selection_index = available_uuids.index(
                             st.session_state.selected_task_uuid
                         )
                     except ValueError:
                         # Should not happen if the check above passes, but handle defensively
-                        current_selection_index = None
+                        radio_selection_index = None
 
                 # Display task IDs as radio buttons
                 selected_task_uuid = st.radio(
                     "Select Task ID:",
                     options=available_uuids,  # Use the list with stable order
                     key="task_selector",
-                    index=current_selection_index,  # Set index explicitly
+                    index=radio_selection_index,  # Set index explicitly
                     format_func=format_func,
                     label_visibility="collapsed",
                 )
@@ -132,13 +127,16 @@ if r:
                             st.text(msg["msg_content"])
                         elif msg["fn_call_to_fn_output"]:
                             st.write("**Tool Calls**")
-                            for fn_call_dict in msg["fn_call_to_fn_output"]:
+                            for i, fn_call_dict in enumerate(
+                                msg["fn_call_to_fn_output"]
+                            ):
                                 new_dict = fn_call_dict["function_call"].copy()
                                 new_dict.pop("input_args_json")
                                 new_dict.pop("source_provider")
                                 new_dict["output"] = fn_call_dict["value"]
                                 st.json(new_dict)
-                                st.divider()
+                                if 0 < i < len(msg["fn_call_to_fn_output"]) - 1:
+                                    st.divider()
 
     # --- Main Area: Display Chat ---
     if st.session_state.selected_task_uuid is not None:
@@ -157,9 +155,6 @@ if r:
         else:
             st.header(f"Task {st.session_state.selected_task_uuid}")
 
-        # Define the fragment that will auto-refresh
-
-        # Call the fragment function to display the chat
         display_chat_messages()
 
     else:
