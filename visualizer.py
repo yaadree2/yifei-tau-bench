@@ -35,8 +35,7 @@ if r:
     if "selected_task_id" not in st.session_state:
         st.session_state.selected_task_id = None
     if "last_refresh_time" not in st.session_state:
-        st.session_state.last_refresh_time = datetime.now()
-
+        st.session_state.last_refresh_time = time.time()
     # --- Sidebar: List Conversations ---
     with st.sidebar:
         st.header("Conversations")
@@ -80,6 +79,7 @@ if r:
             ):
                 st.session_state.selected_task_uuid = selected_task_uuid
                 st.session_state.selected_task_id = uuid_to_task_id[selected_task_uuid]
+                st.session_state.last_task_switch_time = time.time()
                 st.rerun()  # Rerun immediately on selection change
 
     # --- Main Area: Display Chat ---
@@ -103,9 +103,9 @@ if r:
             )  # Get latest N messages
             messages = [json.loads(m) for m in messages_json]
 
-            chat_container = (
-                st.container()
-            )  # Use a container for potentially better scrolling/height control
+            container_key = f"chat_container_{st.session_state.selected_task_uuid}_{st.session_state.last_task_switch_time}"
+            
+            chat_container = st.container(key=container_key)
             with chat_container:
                 for msg in messages:
                     role = msg.get("role", 'assistant')
