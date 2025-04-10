@@ -29,7 +29,7 @@ st.title("Conversational Benchmark Visualizer")
 
 if r:
     # --- Session State Initialization ---
-    if "selected_task_id" not in st.session_state:
+    if "selected_task_uuid" not in st.session_state:
         st.session_state.selected_task_uuid = None
     if "last_refresh_time" not in st.session_state:
         st.session_state.last_refresh_time = datetime.now()
