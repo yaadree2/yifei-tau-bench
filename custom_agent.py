@@ -6,6 +6,7 @@ from typing import Optional
 import logfire
 import redis
 from deepdiff import DeepDiff
+from redis_util import push_to_redis
 from tau_bench.agents.tool_calling_agent import ToolCallingAgent
 from tau_bench.envs.base import Env
 from tau_bench.types import RESPOND_ACTION_NAME, Action, SolveResult
@@ -118,37 +119,6 @@ def compute_cost_attributes(tree, parent_span):
     parent_span.set_attribute("total_USER_input_tokens", total_input_tokens)
     parent_span.set_attribute("total_USER_cost", total_user_cost)
     return total_cost, total_user_cost
-
-
-# --- Redis Helper ---
-def push_to_redis(r: redis.Redis, task_id: int, role: str, content: Optional[str] = None, tool_calls: Optional[list] = None, tool_results: Optional[dict] = None, tool_name: Optional[str] = None):
-    """Pushes a message dictionary to the Redis list for a given task."""
-    if r is None:
-        print(f"Skipping Redis push: No connection.")
-        return
-    try:
-        message = {"role": role}
-        if content:
-            message["content"] = content
-        if tool_calls:
-            # Ensure tool calls are serializable (e.g., convert pydantic models)
-            message["tool_calls"] = [tc if isinstance(tc, dict) else tc.model_dump() for tc in tool_calls]
-        if tool_results:
-             message["tool_results"] = tool_results # Assuming results are already serializable
-             if tool_name:
-                 message["tool_name"] = tool_name
-
-        redis_key = f"conversation:{task_id}"
-        r.rpush(redis_key, json.dumps(message))
-        # Optional: Trim the list to prevent unbounded growth
-        # r.ltrim(redis_key, -1000, -1) # Keep only the latest 1000 messages
-    except redis.exceptions.ConnectionError as e:
-        print(f"Redis connection error during push: {e}")
-    except Exception as e:
-        # Log other errors (e.g., serialization issues)
-        print(f"Error pushing message to Redis for task {task_id}: {e}")
-# --- End Redis Helper ---
-
 
 class CustomToolCallingAgent(ToolCallingAgent):
 
