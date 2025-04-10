@@ -119,6 +119,8 @@ if r:
                                 st.write("**Tool Calls**")
                                 for fn_call_dict in msg['fn_call_to_fn_output']:
                                     new_dict = fn_call_dict['function_call'].copy()
+                                    new_dict.pop('input_args_json')
+                                    new_dict.pop('source_provider')
                                     new_dict['output'] = fn_call_dict['value']
                                     st.json(new_dict)
                                     st.divider()
