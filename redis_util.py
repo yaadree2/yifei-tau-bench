@@ -3,6 +3,7 @@ import os
 import redis
 from typing import Optional
 
+KEY_PREFIX = "tau_bench:"
 
 def connect_to_redis(decode_responses):
     redis_host = os.getenv("REDIS_HOST", "localhost")
@@ -42,5 +43,5 @@ def push_to_redis(
         if tool_name:
             message["tool_name"] = tool_name
 
-    redis_key = f"conversation:{task_id}"
+    redis_key = f"{KEY_PREFIX}{task_id}"
     r.rpush(redis_key, json.dumps(message))

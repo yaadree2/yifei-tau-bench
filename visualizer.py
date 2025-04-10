@@ -4,6 +4,8 @@ import json
 import time
 from datetime import datetime
 
+from redis_util import KEY_PREFIX
+
 # --- Streamlit App Config (MUST be first Streamlit command) ---
 st.set_page_config(layout="wide", page_title="Benchmark Visualizer")
 # ---
@@ -57,11 +59,7 @@ if r:
         try:
             # Fetch active task keys from Redis
             # Using SCAN for potentially large number of keys is better than KEYS
-            task_keys = []
-            cursor = "0"
-            while cursor != 0:
-                cursor, keys = r.scan(cursor=cursor, match="conversation:*", count=100)
-                task_keys.extend(keys)
+            task_keys = r.keys(pattern=f"{KEY_PREFIX}*")
 
             # Extract task IDs and sort them
             # Filter out potential non-integer IDs if the key format is misused
@@ -104,7 +102,7 @@ if r:
     if st.session_state.selected_task_id is not None:
         st.header(f"Conversation: Task {st.session_state.selected_task_id}")
         try:
-            redis_key = f"conversation:{st.session_state.selected_task_id}"
+            redis_key = f"{KEY_PREFIX}{st.session_state.selected_task_id}"
             # Fetch messages, limiting the number fetched initially
             messages_json = r.lrange(
                 redis_key, -MAX_MESSAGES_DISPLAY, -1
