@@ -135,7 +135,10 @@ if r:
                                 new_dict.pop("source_provider")
                                 new_dict["output"] = fn_call_dict["value"]
                                 st.json(new_dict)
-                                if 0 < i < len(msg["fn_call_to_fn_output"]) - 1:
+                                if (
+                                    0 <= i < len(msg["fn_call_to_fn_output"]) - 1
+                                    and len(msg["fn_call_to_fn_output"]) > 1
+                                ):
                                     st.divider()
 
     # --- Main Area: Display Chat ---
