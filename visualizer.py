@@ -87,7 +87,7 @@ if r:
         summary_redis_key = f"{SUMMARY_KEY_PREFIX}{st.session_state.selected_task_uuid}"
         json_data = r.get(summary_redis_key)
         if json_data:
-            data = json.loads(json_data)
+            data = json.loads(r.get(summary_redis_key))
             summary = RedisSummary(**data)
         else:
             summary = None
