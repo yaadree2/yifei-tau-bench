@@ -4,12 +4,15 @@ import redis
 from pydantic import BaseModel
 from cashier.model.model_util import CustomJSONEncoder
 
+
 class RedisSummary(BaseModel):
     reward: int
+
 
 MESSAGES_KEY_PREFIX = "tau_bench:messages:"
 
 SUMMARY_KEY_PREFIX = "tau_bench:summary:"
+
 
 def connect_to_redis(decode_responses):
     redis_host = os.getenv("REDIS_HOST", "localhost")
@@ -30,18 +33,25 @@ def push_assistant_to_redis(
     task_id: int,
     uuid: str,
     assistant_turns,
-):    
-    serialized_turns = [json.dumps(turn, cls=CustomJSONEncoder) for turn in assistant_turns]
+):
+    serialized_turns = [
+        json.dumps(turn, cls=CustomJSONEncoder) for turn in assistant_turns
+    ]
     if serialized_turns:
         r.rpush(f"{MESSAGES_KEY_PREFIX}{uuid}:{task_id}", *serialized_turns)
+
 
 def push_user_to_redis(
     r: redis.Redis,
     task_id: int,
     uuid: str,
     msg: str,
-):    
-    r.rpush(f"{MESSAGES_KEY_PREFIX}{uuid}:{task_id}", json.dumps({"role": "user", "content": msg}))
+):
+    r.rpush(
+        f"{MESSAGES_KEY_PREFIX}{uuid}:{task_id}",
+        json.dumps({"role": "user", "content": msg}),
+    )
+
 
 def push_reward_to_redis(
     r: redis.Redis,

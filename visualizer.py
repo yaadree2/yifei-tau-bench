@@ -4,7 +4,12 @@ import time
 from datetime import datetime
 from cashier.model.model_turn import AssistantTurn
 
-from redis_util import MESSAGES_KEY_PREFIX, SUMMARY_KEY_PREFIX, RedisSummary, connect_to_redis
+from redis_util import (
+    MESSAGES_KEY_PREFIX,
+    SUMMARY_KEY_PREFIX,
+    RedisSummary,
+    connect_to_redis,
+)
 
 # --- Streamlit App Config (MUST be first Streamlit command) ---
 st.set_page_config(layout="wide", page_title="Benchmark Visualizer")
@@ -60,7 +65,6 @@ if r:
                 else:
                     return f"Task ID {uuid_to_task_id[uuid]}, {uuid[-6:]}"
 
-
             if not uuid_to_task_id:
                 st.write("No active conversations found.")
             else:
@@ -69,7 +73,9 @@ if r:
                 current_selection_index = None
                 if st.session_state.selected_task_uuid in available_uuids:
                     try:
-                        current_selection_index = available_uuids.index(st.session_state.selected_task_uuid)
+                        current_selection_index = available_uuids.index(
+                            st.session_state.selected_task_uuid
+                        )
                     except ValueError:
                         # Should not happen if the check above passes, but handle defensively
                         current_selection_index = None
@@ -77,9 +83,9 @@ if r:
                 # Display task IDs as radio buttons
                 selected_task_uuid = st.radio(
                     "Select Task ID:",
-                    options=available_uuids, # Use the list with stable order
+                    options=available_uuids,  # Use the list with stable order
                     key="task_selector",
-                    index=current_selection_index, # Set index explicitly
+                    index=current_selection_index,  # Set index explicitly
                     format_func=format_func,
                     label_visibility="collapsed",
                 )
@@ -90,7 +96,9 @@ if r:
                     and st.session_state.selected_task_uuid != selected_task_uuid
                 ):
                     st.session_state.selected_task_uuid = selected_task_uuid
-                    st.session_state.selected_task_id = uuid_to_task_id[selected_task_uuid]
+                    st.session_state.selected_task_id = uuid_to_task_id[
+                        selected_task_uuid
+                    ]
                     st.rerun()  # Rerun immediately on selection change
 
         display_sidebar()
@@ -99,11 +107,15 @@ if r:
     def display_chat_messages():
         current_uuid = st.session_state.selected_task_uuid
         current_task_id = st.session_state.selected_task_id
-        if not current_uuid or not current_task_id: # Avoid error if state cleared during refresh
+        if (
+            not current_uuid or not current_task_id
+        ):  # Avoid error if state cleared during refresh
             return
 
         messages_json = r.lrange(
-            f"{MESSAGES_KEY_PREFIX}{current_uuid}:{current_task_id}", -MAX_MESSAGES_DISPLAY, -1
+            f"{MESSAGES_KEY_PREFIX}{current_uuid}:{current_task_id}",
+            -MAX_MESSAGES_DISPLAY,
+            -1,
         )  # Get latest N messages
         messages = [json.loads(m) for m in messages_json]
 
@@ -111,20 +123,20 @@ if r:
         container_key = f"chat_display_container_{current_uuid}"
         with st.container(key=container_key):
             for msg in messages:
-                role = msg.get("role", 'assistant')
+                role = msg.get("role", "assistant")
                 with st.chat_message(role):
-                    if role == 'user':
+                    if role == "user":
                         st.text(msg["content"])
                     else:
-                        if msg['msg_content'] and not msg['fn_call_to_fn_output']:
-                            st.text(msg['msg_content'])
+                        if msg["msg_content"] and not msg["fn_call_to_fn_output"]:
+                            st.text(msg["msg_content"])
                         else:
                             st.write("**Tool Calls**")
-                            for fn_call_dict in msg['fn_call_to_fn_output']:
-                                new_dict = fn_call_dict['function_call'].copy()
-                                new_dict.pop('input_args_json')
-                                new_dict.pop('source_provider')
-                                new_dict['output'] = fn_call_dict['value']
+                            for fn_call_dict in msg["fn_call_to_fn_output"]:
+                                new_dict = fn_call_dict["function_call"].copy()
+                                new_dict.pop("input_args_json")
+                                new_dict.pop("source_provider")
+                                new_dict["output"] = fn_call_dict["value"]
                                 st.json(new_dict)
                                 st.divider()
 
@@ -139,7 +151,9 @@ if r:
             summary = None
 
         if summary:
-            st.header(f"Task {st.session_state.selected_task_uuid}, Reward: {summary.reward}")
+            st.header(
+                f"Task {st.session_state.selected_task_uuid}, Reward: {summary.reward}"
+            )
         else:
             st.header(f"Task {st.session_state.selected_task_uuid}")
 
