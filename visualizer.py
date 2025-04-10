@@ -1,5 +1,4 @@
 import streamlit as st
-import redis
 import json
 import time
 from datetime import datetime
