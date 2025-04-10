@@ -3,6 +3,7 @@ import os
 import redis
 from typing import Optional
 from pydantic import BaseModel
+from cashier.model.model_util import CustomJSONEncoder
 
 class RedisSummary(BaseModel):
     reward: int
@@ -25,34 +26,25 @@ def connect_to_redis(decode_responses):
     return r
 
 
-def push_to_redis(
+def push_assistant_to_redis(
     r: redis.Redis,
     task_id: int,
     uuid: str,
-    role: str,
-    content: Optional[str] = None,
-    tool_calls: Optional[list] = None,
-    tool_results: Optional[dict] = None,
-    tool_name: Optional[str] = None,
-):
-    message = {"role": role}
-    if content:
-        message["content"] = content
-    if tool_calls:
-        # Ensure tool calls are serializable (e.g., convert pydantic models)
-        message["tool_calls"] = [
-            tc if isinstance(tc, dict) else tc.model_dump() for tc in tool_calls
-        ]
-    if tool_results:
-        message["tool_results"] = (
-            tool_results  # Assuming results are already serializable
-        )
-        if tool_name:
-            message["tool_name"] = tool_name
-
+    assistant_turns,
+):    
     redis_key = f"{MESSAGES_KEY_PREFIX}{uuid}:{task_id}"
-    r.rpush(redis_key, json.dumps(message))
+    serialized_turns = [json.dumps(turn, cls=CustomJSONEncoder) for turn in assistant_turns]
+    if serialized_turns:
+        r.rpush(redis_key, *serialized_turns)
 
+def push_user_to_redis(
+    r: redis.Redis,
+    task_id: int,
+    uuid: str,
+    msg: str,
+):    
+    redis_key = f"{MESSAGES_KEY_PREFIX}{uuid}:{task_id}"
+    r.rpush(redis_key, json.dumps({"role": "user", "content": msg}))
 
 def push_to_redis_final_reward(
     r: redis.Redis,
