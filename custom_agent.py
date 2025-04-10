@@ -4,7 +4,6 @@ import json
 from typing import Optional
 
 import logfire
-import redis
 from deepdiff import DeepDiff
 from redis_util import connect_to_redis, push_to_redis
 from tau_bench.agents.tool_calling_agent import ToolCallingAgent
