@@ -18,17 +18,7 @@ import dotenv
 
 dotenv.load_dotenv()
 
-
-def run_with_defaults(args) -> None:
-    """
-    Wrapper to run the benchmark with sensible defaults
-    """
-    # Construct command line arguments
-    logfire.configure(scrubbing=False, console=False)
-    model_provider = get_default_model_provider_for_model_name(args.model)
-    ModelClient.initialize()
-
-    # --- Clear Redis Data --- 
+def cleanup_redis():
     try:
         redis_host = os.getenv("REDIS_HOST", "localhost")
         redis_port = int(os.getenv("REDIS_PORT", 6379))
@@ -45,7 +35,17 @@ def run_with_defaults(args) -> None:
         print(f"Could not connect to Redis to clear data: {e}. Old data might persist in visualizer.")
     except Exception as e:
         print(f"An error occurred while clearing Redis data: {e}")
-    # --- End Clear Redis Data ---
+
+def run_with_defaults(args) -> None:
+    """
+    Wrapper to run the benchmark with sensible defaults
+    """
+    # Construct command line arguments
+    logfire.configure(scrubbing=False, console=False)
+    model_provider = get_default_model_provider_for_model_name(args.model)
+    ModelClient.initialize()
+
+    cleanup_redis()
 
     config = RunConfig(
         model_provider=str(model_provider).lower(),
