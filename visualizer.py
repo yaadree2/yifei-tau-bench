@@ -109,32 +109,17 @@ if r:
             with chat_container:
                 for msg in messages:
                     role = msg.get("role", 'assistant')
-                    if role == 'assistant':
-                        assistant_turn = AssistantTurn(**msg)
                     with st.chat_message(role):
                         if role == 'user':
                             st.text(msg["content"])
                         else:
-                            if assistant_turn.msg_content and not assistant_turn.fn_call_to_fn_output:
-                                st.text(assistant_turn.msg_content)
+                            if msg['msg_content'] and not msg['fn_call_to_fn_output']:
+                                st.text(msg['msg_content'])
                             else:
-                                st.write("Tool Calls:")
-                                for fn_call in assistant_turn.fn_call_to_fn_output:
-                                    fn_call_dict = {
-                                        "name": fn_call.name,
-                                        "api_id": fn_call.api_id,
-                                        "args": fn_call.args
-                                    }
-                                    st.json(fn_call_dict)
-
-                                st.write("Tool Results:")
-                                for fn_call, fn_output in assistant_turn.fn_call_to_fn_output.items():
-                                    fn_output_dict = {
-                                        "name": fn_call.name,
-                                        "api_id": fn_call.api_id,
-                                        "output": fn_output
-                                    }
-                                    st.json(fn_output_dict)
+                                for fn_call_dict in msg['fn_call_to_fn_output']:
+                                    st.write("Tool Call")
+                                    st.json(fn_call_dict['function_call'])
+                                    st.json(fn_call_dict['value'])
 
         except Exception as e:
             st.error(f"An error occurred displaying messages: {e}")
