@@ -120,6 +120,7 @@ def compute_cost_attributes(tree, parent_span):
     parent_span.set_attribute("total_USER_cost", total_user_cost)
     return total_cost, total_user_cost
 
+
 class CustomToolCallingAgent(ToolCallingAgent):
 
     def build_tool_fn_registry(
@@ -155,11 +156,18 @@ class CustomToolCallingAgent(ToolCallingAgent):
         # --- Redis Connection per solve ---
         redis_conn = None
         try:
-            redis_conn = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, decode_responses=False, socket_connect_timeout=1) # decode_responses=False for json bytes
+            redis_conn = redis.Redis(
+                host=REDIS_HOST,
+                port=REDIS_PORT,
+                decode_responses=False,
+                socket_connect_timeout=1,
+            )  # decode_responses=False for json bytes
             redis_conn.ping()
             print(f"Task {task_index}: Connected to Redis.")
         except redis.exceptions.ConnectionError as e:
-            print(f"Task {task_index}: Failed to connect to Redis: {e}. Visualization will not be updated.")
+            print(
+                f"Task {task_index}: Failed to connect to Redis: {e}. Visualization will not be updated."
+            )
             redis_conn = None
         # --- End Redis Connection ---
 
@@ -217,8 +225,19 @@ class CustomToolCallingAgent(ToolCallingAgent):
                         AE.add_assistant_turn(model_completion)
                         # --- Push assistant message/tool_calls ---
                         assistant_content = model_completion.get_or_stream_message()
-                        assistant_tool_calls = [fn_call for fn_call in model_completion.get_or_stream_fn_calls()]
-                        push_to_redis(redis_conn, task_index, "assistant", content=assistant_content, tool_calls=assistant_tool_calls if assistant_tool_calls else None)
+                        assistant_tool_calls = [
+                            fn_call
+                            for fn_call in model_completion.get_or_stream_fn_calls()
+                        ]
+                        push_to_redis(
+                            redis_conn,
+                            task_index,
+                            "assistant",
+                            content=assistant_content,
+                            tool_calls=(
+                                assistant_tool_calls if assistant_tool_calls else None
+                            ),
+                        )
                         # ---
 
                         need_user_input = AE.need_user_input
@@ -233,7 +252,12 @@ class CustomToolCallingAgent(ToolCallingAgent):
                         if need_user_input:
                             AE.add_user_turn(env_response.observation)
                             # --- Push next user message ---
-                            push_to_redis(redis_conn, task_index, "user", content=env_response.observation)
+                            push_to_redis(
+                                redis_conn,
+                                task_index,
+                                "user",
+                                content=env_response.observation,
+                            )
                             # ---
                         else:
                             AE.custom_benchmark_check()
@@ -395,12 +419,12 @@ def message_to_action(model_completion) -> Action:
     if fn_calls:
         # Ensure args are serializable if they are Pydantic models
         serializable_args = fn_calls[0].args
-        if hasattr(serializable_args, 'model_dump'):
-             serializable_args = serializable_args.model_dump()
+        if hasattr(serializable_args, "model_dump"):
+            serializable_args = serializable_args.model_dump()
         return Action(
             name=fn_calls[0].name,
-            kwargs=serializable_args, # Use potentially serialized args
-            fn_calls=fn_calls, # Keep original fn_calls for internal use
+            kwargs=serializable_args,  # Use potentially serialized args
+            fn_calls=fn_calls,  # Keep original fn_calls for internal use
         )
     else:
         return Action(

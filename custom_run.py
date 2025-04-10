@@ -17,13 +17,15 @@ import dotenv
 
 dotenv.load_dotenv()
 
+
 def cleanup_redis():
     try:
         r = connect_to_redis(decode_responses=True)
-        r.flushdb() # Removes all keys from the current database
+        r.flushdb()  # Removes all keys from the current database
         r.close()
     except Exception as e:
         print(f"An error occurred while clearing Redis data: {e}")
+
 
 def run_with_defaults(args) -> None:
     """
