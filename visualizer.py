@@ -34,8 +34,7 @@ if r:
         st.session_state.selected_task_uuid = None
     if "selected_task_id" not in st.session_state:
         st.session_state.selected_task_id = None
-    if "last_refresh_time" not in st.session_state:
-        st.session_state.last_refresh_time = time.time()
+
     # --- Sidebar: List Conversations ---
     with st.sidebar:
         st.header("Conversations")
