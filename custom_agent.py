@@ -184,6 +184,7 @@ class CustomToolCallingAgent(ToolCallingAgent):
             task_index=task_index,
             ass_model=self.model,
             user_model=user_model,
+            uuid=UUID,
         ) as span:
             with context_subtree() as tree:
                 env_reset_res = env.reset(task_index=task_index)
