@@ -5,7 +5,7 @@ from typing import Optional
 
 import logfire
 from deepdiff import DeepDiff
-from redis_util import connect_to_redis, push_assistant_to_redis, push_to_redis_final_reward, push_user_to_redis
+from redis_util import connect_to_redis, push_assistant_to_redis, push_reward_to_redis, push_user_to_redis
 from tau_bench.agents.tool_calling_agent import ToolCallingAgent
 from tau_bench.envs.base import Env
 from tau_bench.types import RESPOND_ACTION_NAME, Action, SolveResult
@@ -259,7 +259,7 @@ class CustomToolCallingAgent(ToolCallingAgent):
                         task_index,
                     )
 
-                    push_to_redis_final_reward(redis_conn, UUID, reward)
+                    push_reward_to_redis(redis_conn, UUID, reward)
 
             total_cost, total_user_cost = compute_cost_attributes(tree, span)
 

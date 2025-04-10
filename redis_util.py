@@ -1,7 +1,6 @@
 import json
 import os
 import redis
-from typing import Optional
 from pydantic import BaseModel
 from cashier.model.model_util import CustomJSONEncoder
 
@@ -32,10 +31,9 @@ def push_assistant_to_redis(
     uuid: str,
     assistant_turns,
 ):    
-    redis_key = f"{MESSAGES_KEY_PREFIX}{uuid}:{task_id}"
     serialized_turns = [json.dumps(turn, cls=CustomJSONEncoder) for turn in assistant_turns]
     if serialized_turns:
-        r.rpush(redis_key, *serialized_turns)
+        r.rpush(f"{MESSAGES_KEY_PREFIX}{uuid}:{task_id}", *serialized_turns)
 
 def push_user_to_redis(
     r: redis.Redis,
@@ -43,13 +41,11 @@ def push_user_to_redis(
     uuid: str,
     msg: str,
 ):    
-    redis_key = f"{MESSAGES_KEY_PREFIX}{uuid}:{task_id}"
-    r.rpush(redis_key, json.dumps({"role": "user", "content": msg}))
+    r.rpush(f"{MESSAGES_KEY_PREFIX}{uuid}:{task_id}", json.dumps({"role": "user", "content": msg}))
 
-def push_to_redis_final_reward(
+def push_reward_to_redis(
     r: redis.Redis,
     uuid: str,
     reward: int,
 ):
-    redis_key = f"{SUMMARY_KEY_PREFIX}{uuid}"
-    r.set(redis_key, RedisSummary(reward=reward).model_dump_json())
+    r.set(f"{SUMMARY_KEY_PREFIX}{uuid}", RedisSummary(reward=reward).model_dump_json())
