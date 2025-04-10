@@ -116,11 +116,11 @@ if r:
                             if msg['msg_content'] and not msg['fn_call_to_fn_output']:
                                 st.text(msg['msg_content'])
                             else:
+                                st.write("**Tool Calls**")
                                 for fn_call_dict in msg['fn_call_to_fn_output']:
-                                    st.write("Tool Call")
                                     st.json(fn_call_dict['function_call'])
                                     st.json(fn_call_dict['value'])
-
+                                    st.divider()
         except Exception as e:
             st.error(f"An error occurred displaying messages: {e}")
     else:
