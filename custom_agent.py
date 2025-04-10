@@ -200,9 +200,7 @@ class CustomToolCallingAgent(ToolCallingAgent):
                 AE.graph.blacklist_tool_names = BLACKLISTED_TOOLS
 
                 AE.add_user_turn(obs)
-                # --- Push initial user message ---
                 push_to_redis(redis_conn, task_index, UUID, "user", content=obs)
-                # ---
 
                 full_message_dicts = AE.TC.model_api_format_to_message_manager[
                     (ModelAPI.OPENAI, MessageFormat.MANY_SYSTEM_LAST_NODE_PROMPT)
@@ -212,7 +210,6 @@ class CustomToolCallingAgent(ToolCallingAgent):
                         model_completion = self.get_model_completion(AE)
                         action = message_to_action(model_completion)
                         AE.add_assistant_turn(model_completion)
-                        # --- Push assistant message/tool_calls ---
                         assistant_content = model_completion.get_or_stream_message()
                         assistant_tool_calls = [
                             fn_call
@@ -228,7 +225,6 @@ class CustomToolCallingAgent(ToolCallingAgent):
                                 assistant_tool_calls if assistant_tool_calls else None
                             ),
                         )
-                        # ---
 
                         need_user_input = AE.need_user_input
                         env_response = env.step(
@@ -241,7 +237,6 @@ class CustomToolCallingAgent(ToolCallingAgent):
 
                         if need_user_input:
                             AE.add_user_turn(env_response.observation)
-                            # --- Push next user message ---
                             push_to_redis(
                                 redis_conn,
                                 task_index,
@@ -249,12 +244,8 @@ class CustomToolCallingAgent(ToolCallingAgent):
                                 "user",
                                 content=env_response.observation,
                             )
-                            # ---
                         else:
                             AE.custom_benchmark_check()
-                            # TODO: Optionally push tool execution results here if available
-                            # This might require modifying the env or wrapper to capture results explicitly.
-                            # For now, we only show the assistant's *request* for tool calls.
 
                         if env_response.done:
                             break
