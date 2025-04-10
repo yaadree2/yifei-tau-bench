@@ -84,7 +84,7 @@ if r:
                     role = msg.get("role", "unknown")
                     with st.chat_message(role):
                         if "content" in msg and msg["content"]:
-                            st.markdown(msg["content"])
+                            st.text(msg["content"])
                         if "tool_calls" in msg and msg["tool_calls"]:
                             st.write("Tool Calls:")
                             st.json(msg["tool_calls"])
