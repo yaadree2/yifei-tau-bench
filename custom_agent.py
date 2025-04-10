@@ -5,7 +5,7 @@ from typing import Optional
 
 import logfire
 from deepdiff import DeepDiff
-from redis_util import connect_to_redis, push_assistant_to_redis, push_to_redis, push_to_redis_final_reward
+from redis_util import connect_to_redis, push_assistant_to_redis, push_to_redis_final_reward, push_user_to_redis
 from tau_bench.agents.tool_calling_agent import ToolCallingAgent
 from tau_bench.envs.base import Env
 from tau_bench.types import RESPOND_ACTION_NAME, Action, SolveResult
@@ -200,7 +200,7 @@ class CustomToolCallingAgent(ToolCallingAgent):
                 AE.graph.blacklist_tool_names = BLACKLISTED_TOOLS
 
                 AE.add_user_turn(obs)
-                push_to_redis(redis_conn, task_index, UUID, "user", content=obs)
+                push_user_to_redis(redis_conn, task_index, UUID, obs)
 
                 full_message_dicts = AE.TC.model_api_format_to_message_manager[
                     (ModelAPI.OPENAI, MessageFormat.MANY_SYSTEM_LAST_NODE_PROMPT)
@@ -228,12 +228,11 @@ class CustomToolCallingAgent(ToolCallingAgent):
 
                         if need_user_input:
                             AE.add_user_turn(env_response.observation)
-                            push_to_redis(
+                            push_user_to_redis(
                                 redis_conn,
                                 task_index,
                                 UUID,
-                                "user",
-                                content=env_response.observation,
+                                env_response.observation,
                             )
                         else:
                             AE.custom_benchmark_check()
