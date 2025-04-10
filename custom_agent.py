@@ -6,7 +6,7 @@ from typing import Optional
 import logfire
 import redis
 from deepdiff import DeepDiff
-from redis_util import push_to_redis
+from redis_util import connect_to_redis, push_to_redis
 from tau_bench.agents.tool_calling_agent import ToolCallingAgent
 from tau_bench.envs.base import Env
 from tau_bench.types import RESPOND_ACTION_NAME, Action, SolveResult
@@ -146,23 +146,7 @@ class CustomToolCallingAgent(ToolCallingAgent):
     def solve(
         self, env: Env, task_index: Optional[int] = None, max_num_steps: int = 160
     ) -> SolveResult:
-        # --- Redis Connection per solve ---
-        redis_conn = None
-        try:
-            redis_conn = redis.Redis(
-                host=REDIS_HOST,
-                port=REDIS_PORT,
-                decode_responses=False,
-                socket_connect_timeout=1,
-            )  # decode_responses=False for json bytes
-            redis_conn.ping()
-            print(f"Task {task_index}: Connected to Redis.")
-        except redis.exceptions.ConnectionError as e:
-            print(
-                f"Task {task_index}: Failed to connect to Redis: {e}. Visualization will not be updated."
-            )
-            redis_conn = None
-        # --- End Redis Connection ---
+        redis_conn = connect_to_redis(False)
 
         user_model = env.user.model
         expected_task_actions = env.task.actions

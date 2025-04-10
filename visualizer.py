@@ -4,15 +4,13 @@ import json
 import time
 from datetime import datetime
 
-from redis_util import KEY_PREFIX
+from redis_util import KEY_PREFIX, connect_to_redis
 
 # --- Streamlit App Config (MUST be first Streamlit command) ---
 st.set_page_config(layout="wide", page_title="Benchmark Visualizer")
 # ---
 
-# --- Configuration ---
-REDIS_HOST = "localhost"
-REDIS_PORT = 6379
+
 REFRESH_INTERVAL_SECONDS = 2
 MAX_MESSAGES_DISPLAY = (
     500  # Limit messages shown per conversation to avoid browser slowdown
@@ -21,25 +19,8 @@ MAX_MESSAGES_DISPLAY = (
 
 # --- Redis Connection ---
 @st.cache_resource
-def get_redis_connection():
-    """Connects to Redis."""
-    try:
-        r = redis.Redis(
-            host=REDIS_HOST,
-            port=REDIS_PORT,
-            decode_responses=True,
-            socket_connect_timeout=1,
-        )
-        r.ping()
-        print("Successfully connected to Redis.")
-        return r
-    except redis.exceptions.ConnectionError as e:
-        st.error(
-            f"Failed to connect to Redis at {REDIS_HOST}:{REDIS_PORT}. Please ensure Redis server is running."
-        )
-        print(f"Redis connection error: {e}")
-        return None
-
+def get_redis_connection():    
+    return connect_to_redis(True)
 
 r = get_redis_connection()
 
