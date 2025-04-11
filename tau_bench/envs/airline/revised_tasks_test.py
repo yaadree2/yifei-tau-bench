@@ -528,24 +528,6 @@ TASKS = [
         ],
         outputs=[],
     ),
-    # TODO: the current graph prompts are not good enough to distinguish between modifying a request vs removing + adding a new request (which triggers a crash)
-    # Task(
-    #     annotator="1",
-    #     user_id="mohamed_hernandez_5188",
-    #     instruction="You are Mohamed Hernandez and your user id is mohamed_hernandez_5188. You are a bit absent minded and ended up booking two flights on May 17. You want to cancel the one from ATL to JFK. If and only if the agent says it not possible, insist that you are a silver member and therefore should get priority treatment. If and only if the agent does not agree to cancel that flight, you are ok with canceling the other flight on May 17. Otherwise, just thank the agent and end the conversation.",
-    #     actions=[
-    #         Action(
-    #             name="get_user_details", kwargs={"user_id": "mohamed_hernandez_5188"}
-    #         ),
-    #         Action(name="get_reservation_details", kwargs={"reservation_id": "35V5SM"}),
-    #         Action(name="get_reservation_details", kwargs={"reservation_id": "XXDC1M"}),
-    #         Action(name="get_reservation_details", kwargs={"reservation_id": "V5EMZH"}),
-    #         Action(name="get_reservation_details", kwargs={"reservation_id": "D1EW9B"}),
-    #         Action(name="get_reservation_details", kwargs={"reservation_id": "9HBUV8"}),
-    #         Action(name="cancel_reservation", kwargs={"reservation_id": "9HBUV8"}),
-    #     ],
-    #     outputs=[],
-    # ),
     # TODO: this task expects the user to give a non-applicable reason (friend's birthday) to cancel the flight. the problem is that the user can lie and give another reason. so this is a brittle test
     # Task(
     #     annotator="2",
@@ -730,6 +712,25 @@ TASKS = [
                 kwargs={"origin": "ATL", "destination": "MCO", "date": "2024-05-22"},
             ),
             Action(name="calculate", kwargs={"expression": "430 + 412 - (136 + 109)"}),
+        ],
+        outputs=[],
+    ),
+    # TODO: the current graph prompts are not good enough to distinguish between modifying a request vs removing + adding a new request (which triggers a crash)
+    Task(
+        id=27,
+        annotator="1",
+        user_id="mohamed_hernandez_5188",
+        instruction="You are Mohamed Hernandez and your user id is mohamed_hernandez_5188. You are a bit absent minded and ended up booking two flights on May 17. You want to cancel the one from ATL to JFK. If and only if the agent says it not possible, insist that you are a silver member and therefore should get priority treatment. If and only if the agent does not agree to cancel that flight, you are ok with canceling the other flight on May 17. Otherwise, just thank the agent and end the conversation.",
+        actions=[
+            Action(
+                name="get_user_details", kwargs={"user_id": "mohamed_hernandez_5188"}
+            ),
+            Action(name="get_reservation_details", kwargs={"reservation_id": "35V5SM"}),
+            Action(name="get_reservation_details", kwargs={"reservation_id": "XXDC1M"}),
+            Action(name="get_reservation_details", kwargs={"reservation_id": "V5EMZH"}),
+            Action(name="get_reservation_details", kwargs={"reservation_id": "D1EW9B"}),
+            Action(name="get_reservation_details", kwargs={"reservation_id": "9HBUV8"}),
+            Action(name="cancel_reservation", kwargs={"reservation_id": "9HBUV8"}),
         ],
         outputs=[],
     ),
