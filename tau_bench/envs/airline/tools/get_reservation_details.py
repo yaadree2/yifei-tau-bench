@@ -19,7 +19,7 @@ class GetReservationDetails(Tool):
             "type": "function",
             "function": {
                 "name": "get_reservation_details",
-                "description": "Get the details of a reservation. The reservation can be past or future.",
+                "description": "Get the details of a reservation. The reservation can be past or future.",  # The last sentence is to remind the agent to call this tool even when the reservation is past
                 "parameters": {
                     "type": "object",
                     "properties": {

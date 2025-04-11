@@ -102,7 +102,7 @@ class SearchOnestopFlightWithoutSort:
             "type": "function",
             "function": {
                 "name": "search_onestop_flight",
-                "description": "Search onestop flights between two cities on a specific date. The results won't be sorted in any way.",
+                "description": "Search onestop flights between two cities on a specific date. The results won't be sorted in any way.",  # sometimes the agent assumed that the results were sorted
                 "parameters": {
                     "type": "object",
                     "properties": {
