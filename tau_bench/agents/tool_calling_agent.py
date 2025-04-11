@@ -85,6 +85,8 @@ def message_to_action(
 ) -> Action:
     if "tool_calls" in message and message["tool_calls"] is not None and len(message["tool_calls"]) > 0 and message["tool_calls"][0]["function"] is not None:
         tool_call = message["tool_calls"][0]
+        if tool_call["function"]["arguments"] == '':
+            tool_call["function"]["arguments"] = '{}'
         return Action(
             name=tool_call["function"]["name"],
             kwargs=json.loads(tool_call["function"]["arguments"]),
