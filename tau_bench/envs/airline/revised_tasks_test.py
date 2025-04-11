@@ -704,22 +704,4 @@ TASKS = [
         ],
         outputs=[],
     ),
-    Task(
-        id=27,
-        annotator="1",
-        user_id="mohamed_hernandez_5188",
-        instruction="You are Mohamed Hernandez and your user id is mohamed_hernandez_5188. You are a bit absent minded and ended up booking two flights on May 17. You want to cancel the one from ATL to JFK. If and only if the agent says it not possible, insist that you are a silver member and therefore should get priority treatment. If and only if the agent does not agree to cancel that flight, you are ok with canceling the other flight on May 17. Otherwise, just thank the agent and end the conversation.",
-        actions=[
-            Action(
-                name="get_user_details", kwargs={"user_id": "mohamed_hernandez_5188"}
-            ),
-            Action(name="get_reservation_details", kwargs={"reservation_id": "35V5SM"}),
-            Action(name="get_reservation_details", kwargs={"reservation_id": "XXDC1M"}),
-            Action(name="get_reservation_details", kwargs={"reservation_id": "V5EMZH"}),
-            Action(name="get_reservation_details", kwargs={"reservation_id": "D1EW9B"}),
-            Action(name="get_reservation_details", kwargs={"reservation_id": "9HBUV8"}),
-            Action(name="cancel_reservation", kwargs={"reservation_id": "9HBUV8"}),
-        ],
-        outputs=[],
-    ),
 ]
