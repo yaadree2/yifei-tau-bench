@@ -605,7 +605,6 @@ TASKS = [
         actions=[],
         outputs=[],
     ),
-    # TODO: this is wrong. The agent cannot directly change the flights even if the user has insurance. Instead, the agent must first cancel the reservation and then book the new flights.
     Task(
         id=23,
         annotator="1",
