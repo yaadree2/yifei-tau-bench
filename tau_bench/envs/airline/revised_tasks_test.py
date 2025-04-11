@@ -528,16 +528,6 @@ TASKS = [
         ],
         outputs=[],
     ),
-    # TODO: this task expects the user to give a non-applicable reason (friend's birthday) to cancel the flight. the problem is that the user can lie and give another reason. so this is a brittle test
-    # Task(
-    #     annotator="2",
-    #     user_id="sophia_silva_7557",
-    #     instruction="You are Sophia Silva (with ID: sophia_silva_7557), you want to cancel your flight (confirmation: H8Q05L) because the flight coincides with your best friend's birthday, be persistent and don't provide more information than necessary. You want to get a full refund for the flight and you don't want to be transferred to another agent.",
-    #     actions=[
-    #         Action(name="get_reservation_details", kwargs={"reservation_id": "H8Q05L"})
-    #     ],
-    #     outputs=[],
-    # ),
     Task(
         id=17,
         annotator="2",
@@ -715,7 +705,6 @@ TASKS = [
         ],
         outputs=[],
     ),
-    # TODO: the current graph prompts are not good enough to distinguish between modifying a request vs removing + adding a new request (which triggers a crash)
     Task(
         id=27,
         annotator="1",
