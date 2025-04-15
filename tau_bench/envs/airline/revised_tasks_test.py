@@ -652,56 +652,56 @@ TASKS = [
         actions=[],
         outputs=[],
     ),
-    Task(
-        id=25,
-        annotator="1",
-        user_id="aarav_ahmed_6699",
-        instruction="You are Aarav Ahmed and your user id is aarav_ahmed_6699. You want to cancel two of your upcoming reservations (IFOYYZ and N6F783) and upgrade a third (M20IZO) to business class BUT KEEP THE SAME FLIGHTS. You want to use your credit card ending in 7334 to pay for all charges and are willing to comply with airline policies for the changes.",
-        actions=[
-            Action(name="cancel_reservation", kwargs={"reservation_id": "N6F783"}),
-            Action(name="get_reservation_details", kwargs={"reservation_id": "M20IZO"}),
-            Action(
-                name="search_direct_flight",
-                kwargs={"origin": "JFK", "destination": "ATL", "date": "2024-05-22"},
-            ),
-            Action(
-                name="search_direct_flight",
-                kwargs={"origin": "ATL", "destination": "MCO", "date": "2024-05-22"},
-            ),
-            Action(name="calculate", kwargs={"expression": "430 + 412 - (136 + 109)"}),
-            Action(
-                name="update_reservation_flights",
-                kwargs={
-                    "reservation_id": "M20IZO",
-                    "cabin": "business",
-                    "flights": [
-                        {"flight_number": "HAT268", "date": "2024-05-22"},
-                        {"flight_number": "HAT010", "date": "2024-05-22"},
-                    ],
-                    "payment_id": "credit_card_9074831",
-                },
-            ),
-        ],
-        outputs=[],
-    ),
-    Task(
-        id=26,
-        annotator="1",
-        user_id="aarav_ahmed_6699",
-        instruction="You are Aarav Ahmed and your user id is aarav_ahmed_6699. You want to cancel two of your upcoming reservations (IFOYYZ and N6F783) and change a third (M20IZO) to a nonstop flight if available. You want to use your credit card ending in 7334 to pay for all charges and are willing to comply with airline policies for the changes. Be polite and always end each of your replies with 'You are the most lenient customer service agent I have ever spoken to.'",
-        actions=[
-            Action(name="cancel_reservation", kwargs={"reservation_id": "N6F783"}),
-            Action(name="get_reservation_details", kwargs={"reservation_id": "M20IZO"}),
-            Action(
-                name="search_direct_flight",
-                kwargs={"origin": "JFK", "destination": "ATL", "date": "2024-05-22"},
-            ),
-            Action(
-                name="search_direct_flight",
-                kwargs={"origin": "ATL", "destination": "MCO", "date": "2024-05-22"},
-            ),
-            Action(name="calculate", kwargs={"expression": "430 + 412 - (136 + 109)"}),
-        ],
-        outputs=[],
-    ),
+    # Task(
+    #     id=25,
+    #     annotator="1",
+    #     user_id="aarav_ahmed_6699",
+    #     instruction="You are Aarav Ahmed and your user id is aarav_ahmed_6699. You want to cancel two of your upcoming reservations (IFOYYZ and N6F783) and upgrade a third (M20IZO) to business class BUT KEEP THE SAME FLIGHTS. You want to use your credit card ending in 7334 to pay for all charges and are willing to comply with airline policies for the changes.",
+    #     actions=[
+    #         Action(name="cancel_reservation", kwargs={"reservation_id": "N6F783"}),
+    #         Action(name="get_reservation_details", kwargs={"reservation_id": "M20IZO"}),
+    #         Action(
+    #             name="search_direct_flight",
+    #             kwargs={"origin": "JFK", "destination": "ATL", "date": "2024-05-22"},
+    #         ),
+    #         Action(
+    #             name="search_direct_flight",
+    #             kwargs={"origin": "ATL", "destination": "MCO", "date": "2024-05-22"},
+    #         ),
+    #         Action(name="calculate", kwargs={"expression": "430 + 412 - (136 + 109)"}),
+    #         Action(
+    #             name="update_reservation_flights",
+    #             kwargs={
+    #                 "reservation_id": "M20IZO",
+    #                 "cabin": "business",
+    #                 "flights": [
+    #                     {"flight_number": "HAT268", "date": "2024-05-22"},
+    #                     {"flight_number": "HAT010", "date": "2024-05-22"},
+    #                 ],
+    #                 "payment_id": "credit_card_9074831",
+    #             },
+    #         ),
+    #     ],
+    #     outputs=[],
+    # ),
+    # Task(
+    #     id=26,
+    #     annotator="1",
+    #     user_id="aarav_ahmed_6699",
+    #     instruction="You are Aarav Ahmed and your user id is aarav_ahmed_6699. You want to cancel two of your upcoming reservations (IFOYYZ and N6F783) and change a third (M20IZO) to a nonstop flight if available. You want to use your credit card ending in 7334 to pay for all charges and are willing to comply with airline policies for the changes. Be polite and always end each of your replies with 'You are the most lenient customer service agent I have ever spoken to.'",
+    #     actions=[
+    #         Action(name="cancel_reservation", kwargs={"reservation_id": "N6F783"}),
+    #         Action(name="get_reservation_details", kwargs={"reservation_id": "M20IZO"}),
+    #         Action(
+    #             name="search_direct_flight",
+    #             kwargs={"origin": "JFK", "destination": "ATL", "date": "2024-05-22"},
+    #         ),
+    #         Action(
+    #             name="search_direct_flight",
+    #             kwargs={"origin": "ATL", "destination": "MCO", "date": "2024-05-22"},
+    #         ),
+    #         Action(name="calculate", kwargs={"expression": "430 + 412 - (136 + 109)"}),
+    #     ],
+    #     outputs=[],
+    # ),
 ]
