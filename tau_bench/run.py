@@ -102,6 +102,7 @@ def run(config: RunConfig, custom_json_encoder = None) -> List[EnvRunResult]:
                 anthropic_messages=res.anthropic_messages,
                 actions_diff=res.actions_diff,
                 total_cost=res.total_cost,
+                total_agent_cost=res.total_agent_cost,
                 total_user_cost=res.total_user_cost,
             )
         except Exception as e:
