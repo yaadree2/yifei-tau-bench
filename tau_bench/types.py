@@ -51,6 +51,7 @@ class SolveResult(BaseModel):
     anthropic_messages: Optional[List[Dict[str, Any]]] = None
     actions_diff: Optional[Dict[str, Any]] = None
     total_cost: Optional[float] = None
+    total_agent_cost: Optional[float] = None
     total_user_cost: Optional[float] = None
 
 
@@ -87,6 +88,7 @@ class EnvRunResult(BaseModel):
     oai_messages: Optional[List[Dict[str, Any]]] = None
     anthropic_messages: Optional[List[Dict[str, Any]]] = None
     total_cost: Optional[float] = None
+    total_agent_cost: Optional[float] = None
     total_user_cost: Optional[float] = None
 
 
