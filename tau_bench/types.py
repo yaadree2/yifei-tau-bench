@@ -114,6 +114,7 @@ class RunConfig(BaseModel):
     shuffle: int = 0
     user_strategy: str = "llm"
     few_shot_displays_path: Optional[str] = None
+    raise_on_error: bool = False
 
     @model_validator(mode="after")
     def validate_agent(self):
