@@ -50,7 +50,7 @@ def run_with_defaults(args) -> None:
         end_index=args.end_index,
         task_ids=args.task_ids,
         max_concurrency=args.max_concurrency,
-        user_strategy="human",
+        user_strategy="llm",
     )
 
     with logfire.span(
