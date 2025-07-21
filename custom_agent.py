@@ -13,6 +13,7 @@ from redis_util import (
 )
 from tau_bench.agents.tool_calling_agent import ToolCallingAgent
 from tau_bench.envs.base import Env
+from tau_bench.envs.user import LLMUserSimulationEnv
 from tau_bench.types import RESPOND_ACTION_NAME, Action, SolveResult
 
 from cashier.agent_executor import AgentExecutor
@@ -165,7 +166,7 @@ class CustomToolCallingAgent(ToolCallingAgent):
         redis_conn = connect_to_redis(False)
         UUID = generate_unique_id()
 
-        user_model = env.user.model
+        user_model = env.user.model if isinstance(env.user, LLMUserSimulationEnv) else None
         expected_task_actions = env.task.actions
         expected_task_action_names = [action.name for action in expected_task_actions]
         expected_write_task_actions = [
