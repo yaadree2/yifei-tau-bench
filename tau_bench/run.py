@@ -113,6 +113,8 @@ def run(config: RunConfig, custom_json_encoder = None) -> List[EnvRunResult]:
                 traj=[],
                 trial=trial,
             )
+            if config.raise_on_error:
+                raise e from e
         print(
             "✅" if result.reward == 1 else "❌",
             f"task_id={idx}",
