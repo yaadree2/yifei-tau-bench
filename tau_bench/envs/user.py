@@ -28,13 +28,11 @@ class BaseUserSimulationEnv(abc.ABC):
 class HumanUserSimulationEnv(BaseUserSimulationEnv):
     def reset(self, instruction: str) -> str:
         MessageDisplay.print_msg("system", instruction)
-        text_input = input("You: ")
-        return text_input
+        return input("You: ")
 
     def step(self, content: str) -> str:
         MessageDisplay.print_msg("assistant", content)
-        text_input = input("You: ")
-        return text_input
+        return input("You: ")
 
     def get_total_cost(self) -> float:
         return 0
