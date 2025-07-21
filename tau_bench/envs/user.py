@@ -6,6 +6,8 @@ from litellm import completion
 import logfire
 from typing import Optional, List, Dict, Any, Union
 
+from tau_bench.envs.message_display import MessageDisplay
+
 
 class BaseUserSimulationEnv(abc.ABC):
     metadata = {}
@@ -25,10 +27,14 @@ class BaseUserSimulationEnv(abc.ABC):
 
 class HumanUserSimulationEnv(BaseUserSimulationEnv):
     def reset(self, instruction: str) -> str:
-        return input(f"{instruction}\n")
+        MessageDisplay.print_msg("system", instruction)
+        text_input = input("You: ")
+        return text_input
 
     def step(self, content: str) -> str:
-        return input(f"{content}\n")
+        MessageDisplay.print_msg("assistant", content)
+        text_input = input("You: ")
+        return text_input
 
     def get_total_cost(self) -> float:
         return 0
