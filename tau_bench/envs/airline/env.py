@@ -23,6 +23,8 @@ class MockAirlineDomainEnv(Env):
                 from tau_bench.envs.airline.tasks_test import TASKS as tasks
             case "revised_test":
                 from tau_bench.envs.airline.revised_tasks_test import TASKS as tasks
+            case "dev_test":
+                from tau_bench.envs.airline.dev_tasks_test import TASKS as tasks
             case _:
                 raise ValueError(f"Unknown task split: {task_split}")
         super().__init__(
