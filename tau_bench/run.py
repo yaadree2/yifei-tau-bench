@@ -24,7 +24,7 @@ def run(config: RunConfig, custom_json_encoder = None) -> List[EnvRunResult]:
     assert config.user_model_provider in provider_list, "Invalid user model provider"
     if config.agent_strategy is not None:
         assert config.agent_strategy in ["tool-calling", "act", "react", "few-shot"], "Invalid agent strategy"
-    assert config.task_split in ["train", "test", "dev", "revised_test"], "Invalid task split"
+    assert config.task_split in ["train", "test", "dev", "revised_test", "dev_test"], "Invalid task split"
     assert config.user_strategy in [item.value for item in UserStrategy], "Invalid user strategy"
 
     json_encoder = custom_json_encoder or json.JSONEncoder
