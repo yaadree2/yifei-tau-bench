@@ -372,7 +372,7 @@ class CustomToolCallingAgent(ToolCallingAgent):
                 temp_message_list.append(
                     {
                         "role": "user",
-                        "content": "You returned an empty response, which is disallowed. Please try again.",
+                        "content": "You returned an empty response, which is disallowed. Please try again. You MUST return a NON-EMPTY response.",
                     }
                 )
                 node_system = message_manager.get_last_node_system_msg()

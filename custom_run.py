@@ -89,7 +89,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--max-concurrency",
         type=int,
-        default=43,
+        default=55,
         help="Number of tasks to run in parallel",
     )
     parser.add_argument(
