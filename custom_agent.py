@@ -84,6 +84,8 @@ def compute_token_attributes_for_agent(llm_spans):
     for llm_span in llm_spans:
         response_data = json.loads(llm_span.attributes["response_data"])
         request_data = json.loads(llm_span.attributes["request_data"])
+        if response_data.get("usage", None) is None:
+            continue
         output_tokens = response_data["usage"]["completion_tokens"]
         input_tokens = response_data["usage"]["prompt_tokens"]
         total_output_tokens += output_tokens
