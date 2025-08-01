@@ -63,10 +63,6 @@ def run_with_defaults(args) -> None:
     ) as span:
         results = run(config, CustomJSONEncoder)
 
-        rewards = sum([r.reward for r in results])
-        span.set_attribute("total_completed_count", len(results))
-        span.set_attribute("total_successful_count", rewards)
-
         total_cost = sum([r.total_cost for r in results if r.total_cost is not None])
         total_user_cost = sum(
             [r.total_user_cost for r in results if r.total_user_cost is not None]

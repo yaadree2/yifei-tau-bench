@@ -267,6 +267,9 @@ class CustomToolCallingAgent(ToolCallingAgent):
                     push_reward_to_redis(redis_conn, UUID, reward)
 
             total_cost, total_user_cost = compute_cost_attributes(tree, span)
+            logfire.metric_counter("total_completed_count").add(1)
+            if reward == 1:
+                logfire.metric_counter("total_successful_count").add(1)
 
         turns = AE.TC.turns
         oai_messages = []
