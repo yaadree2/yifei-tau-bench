@@ -19,7 +19,7 @@ setup(
         "numpy>=1.26.4",
         "litellm>=1.41.0",
         "pydantic>=2.11.2",
-        "logfire>=3.12.0",
+        "logfire>=3.22.1",
         "pydantic-ai>=0.0.55",
         "colorama>=0.4.6",
     ],

@@ -29,7 +29,7 @@ def run_with_defaults(args) -> None:
     Wrapper to run the benchmark with sensible defaults
     """
     # Construct command line arguments
-    logfire.configure(scrubbing=False, console=False)
+    logfire.configure(scrubbing=False, console=False, metrics=logfire.MetricsOptions(collect_in_spans=True))
     model_provider = get_default_model_provider_for_model_name(args.model)
     ModelClient.initialize()
 
@@ -62,10 +62,6 @@ def run_with_defaults(args) -> None:
         max_concurrency=args.max_concurrency,
     ) as span:
         results = run(config, CustomJSONEncoder)
-
-        rewards = sum([r.reward for r in results])
-        span.set_attribute("total_completed_count", len(results))
-        span.set_attribute("total_successful_count", rewards)
 
         total_cost = sum([r.total_cost for r in results if r.total_cost is not None])
         total_user_cost = sum(
