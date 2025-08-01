@@ -29,7 +29,7 @@ def run_with_defaults(args) -> None:
     Wrapper to run the benchmark with sensible defaults
     """
     # Construct command line arguments
-    logfire.configure(scrubbing=False, console=False)
+    logfire.configure(scrubbing=False, console=False, metrics=logfire.MetricsOptions(collect_in_spans=True))
     model_provider = get_default_model_provider_for_model_name(args.model)
     ModelClient.initialize()
 
