@@ -97,6 +97,7 @@ class RunConfig(BaseModel):
     user_model_provider: str
     model: str
     user_model: str = "gpt-4o"
+    user_model_kwargs: Optional[Dict[str, Any]] = None
     num_trials: int = 1
     env: str = "retail"
     agent_strategy: Optional[str] = "tool-calling"

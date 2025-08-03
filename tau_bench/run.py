@@ -42,6 +42,8 @@ def run(config: RunConfig, custom_json_encoder = None) -> List[EnvRunResult]:
         user_model=config.user_model,
         user_provider=config.user_model_provider,
         task_split=config.task_split,
+        user_model_kwargs=config.user_model_kwargs,
+
     )
     agent = agent_factory(
         tools_info=env.tools_info,
