@@ -80,6 +80,8 @@ def run(config: RunConfig, custom_json_encoder = None) -> List[EnvRunResult]:
             task_split=config.task_split,
             user_provider=config.user_model_provider,
             task_index=idx,
+            user_model_kwargs=config.user_model_kwargs,
+            logfire_user_completion=config.logfire_user_completion,
         )
         idx_to_trial[idx] += 1
         trial = idx_to_trial[idx]
