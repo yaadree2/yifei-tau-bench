@@ -109,6 +109,7 @@ class LLMUserSimulationEnv(BaseUserSimulationEnv):
             "For either 1) or 2), when in doubt, YOU MUST clarify with the agent before generating '###STOP###'. DO NOT rush with generating '###STOP###'.\n"
             "- Do not repeat the exact instruction in the conversation. Instead, use your own words to convey the same information.\n"
             "- Try to make the conversation as natural as possible, and stick to the personalities in the instruction.\n"
+            "- The current time is 2024-05-15 15:00:00 EST.\n"
             "</rules>"
         )
 
