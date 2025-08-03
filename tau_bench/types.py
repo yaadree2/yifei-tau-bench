@@ -98,6 +98,7 @@ class RunConfig(BaseModel):
     model: str
     user_model: str = "gpt-4o"
     user_model_kwargs: Optional[Dict[str, Any]] = None
+    logfire_user_completion: bool = False
     num_trials: int = 1
     env: str = "retail"
     agent_strategy: Optional[str] = "tool-calling"

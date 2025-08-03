@@ -54,6 +54,7 @@ class Env(object):
         user_provider: Optional[str] = None,
         task_index: Optional[int] = None,
         user_model_kwargs: Optional[Dict[str, Any]] = None,
+        logfire_user_completion: bool = False,
     ) -> None:
         super().__init__()
         self.data_load_func = data_load_func
@@ -72,7 +73,7 @@ class Env(object):
         self.wiki = wiki
         self.rules = rules
         self.user = load_user(
-            user_strategy=user_strategy, model=user_model, provider=user_provider, user_model_kwargs=user_model_kwargs
+            user_strategy=user_strategy, model=user_model, provider=user_provider, user_model_kwargs=user_model_kwargs, logfire_user_completion=logfire_user_completion
         )
         self.actions: List[Action] = []
 

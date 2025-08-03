@@ -2,11 +2,12 @@
 
 import abc
 import enum
-from litellm import completion
+import litellm
 import logfire
 from typing import Optional, List, Dict, Any, Union
 
 from tau_bench.envs.message_display import MessageDisplay
+
 
 
 class BaseUserSimulationEnv(abc.ABC):
@@ -39,12 +40,13 @@ class HumanUserSimulationEnv(BaseUserSimulationEnv):
 
 
 class LLMUserSimulationEnv(BaseUserSimulationEnv):
-    def __init__(self, model: str, provider: str, user_model_kwargs: Optional[Dict[str, Any]] = None) -> None:
+    def __init__(self, model: str, provider: str, user_model_kwargs: Optional[Dict[str, Any]] = None, logfire_user_completion: bool = False) -> None:
         super().__init__()
         self.messages: List[Dict[str, Any]] = []
         self.model = model
         self.provider = provider
         self.user_model_kwargs = user_model_kwargs
+        self.logfire_user_completion = logfire_user_completion
         self.total_cost = 0.0
         self.reset_messages()
 
@@ -54,8 +56,11 @@ class LLMUserSimulationEnv(BaseUserSimulationEnv):
         message_content = ""
         retries = 3
         copied_messages = messages.copy()
+        if self.logfire_user_completion:
+            litellm.callbacks = ["logfire"]
+            litellm.success_callback = ["logfire"]
         while not message_content and retries > 0:
-            res = completion(
+            res = litellm.completion(
                 model=self.model,
                 custom_llm_provider=self.provider,
                 messages=copied_messages,
@@ -76,13 +81,14 @@ class LLMUserSimulationEnv(BaseUserSimulationEnv):
         if not message_content:
             raise ValueError("Failed to generate a non-empty user message")
 
-        logfire.info(
-            "Customer msg: {msg}",
-            msg=message_content,
-            messages=copied_messages,
-            completion=res,
-            _tags=["CustomerLLM"],
-        )
+        if not self.logfire_user_completion:    
+            logfire.info(
+                "Customer msg: {msg}",
+                msg=message_content,
+                messages=copied_messages,
+                completion=res,
+                _tags=["CustomerLLM"],
+            )
         return res, message
 
     def generate_next_message(self, messages: List[Dict[str, Any]]) -> str:
@@ -166,7 +172,7 @@ User Response:
 <the user response (this will be parsed and sent to the agent)>"""
 
     def generate_next_message(self, messages: List[Dict[str, Any]]) -> str:
-        res = completion(
+        res = litellm.completion(
             model=self.model, custom_llm_provider=self.provider, messages=messages
         )
         message = res.choices[0].message
@@ -215,7 +221,7 @@ class VerifyUserSimulationEnv(LLMUserSimulationEnv):
         attempts = 0
         cur_message = None
         while attempts < self.max_attempts:
-            res = completion(
+            res = litellm.completion(
                 model=self.model, custom_llm_provider=self.provider, messages=messages
             )
             cur_message = res.choices[0].message
@@ -275,7 +281,7 @@ Your answer will be parsed, so do not include any other text than the classifica
 -----
 
 Classification:"""
-    res = completion(
+    res = litellm.completion(
         model=model,
         custom_llm_provider=provider,
         messages=[{"role": "user", "content": prompt}],
@@ -309,7 +315,7 @@ Reflection:
 
 Response:
 <the response (this will be parsed and sent to the agent)>"""
-    res = completion(
+    res = litellm.completion(
         model=model,
         custom_llm_provider=provider,
         messages=[{"role": "user", "content": prompt}],
@@ -373,6 +379,7 @@ def load_user(
     model: Optional[str] = "gpt-4o",
     provider: Optional[str] = None,
     user_model_kwargs: Optional[Dict[str, Any]] = None,
+    logfire_user_completion: bool = False,
 ) -> BaseUserSimulationEnv:
     if isinstance(user_strategy, str):
         user_strategy = UserStrategy(user_strategy)
@@ -383,7 +390,7 @@ def load_user(
             raise ValueError("LLM user strategy requires a model")
         if provider is None:
             raise ValueError("LLM user strategy requires a model provider")
-        return LLMUserSimulationEnv(model=model, provider=provider, user_model_kwargs=user_model_kwargs)
+        return LLMUserSimulationEnv(model=model, provider=provider, user_model_kwargs=user_model_kwargs, logfire_user_completion=logfire_user_completion)
     elif user_strategy == UserStrategy.REACT:
         if model is None:
             raise ValueError("React user strategy requires a model")
