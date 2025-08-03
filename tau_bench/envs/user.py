@@ -9,6 +9,7 @@ from typing import Optional, List, Dict, Any, Union
 from tau_bench.envs.message_display import MessageDisplay
 
 litellm.callbacks = ["logfire"]
+litellm.success_callback = ["logfire"]
 
 class BaseUserSimulationEnv(abc.ABC):
     metadata = {}
