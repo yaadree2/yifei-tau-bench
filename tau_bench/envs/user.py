@@ -8,8 +8,7 @@ from typing import Optional, List, Dict, Any, Union
 
 from tau_bench.envs.message_display import MessageDisplay
 
-litellm.callbacks = ["logfire"]
-litellm.success_callback = ["logfire"]
+
 
 class BaseUserSimulationEnv(abc.ABC):
     metadata = {}
@@ -57,6 +56,7 @@ class LLMUserSimulationEnv(BaseUserSimulationEnv):
         retries = 3
         copied_messages = messages.copy()
         litellm.callbacks = ["logfire"]
+        litellm.success_callback = ["logfire"]
         while not message_content and retries > 0:
             res = litellm.completion(
                 model=self.model,
