@@ -13,6 +13,7 @@ def get_env(
     user_provider: Optional[str] = None,
     task_index: Optional[int] = None,
     user_model_kwargs: Optional[Dict[str, Any]] = None,
+    logfire_user_completion: bool = False,
 ) -> Env:
     if env_name == "retail":
         from tau_bench.envs.retail import MockRetailDomainEnv
@@ -34,6 +35,7 @@ def get_env(
             user_provider=user_provider,
             task_index=task_index,
             user_model_kwargs=user_model_kwargs,
+            logfire_user_completion=logfire_user_completion,
         )
     else:
         raise ValueError(f"Unknown environment: {env_name}")

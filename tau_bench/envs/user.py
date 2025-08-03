@@ -40,12 +40,13 @@ class HumanUserSimulationEnv(BaseUserSimulationEnv):
 
 
 class LLMUserSimulationEnv(BaseUserSimulationEnv):
-    def __init__(self, model: str, provider: str, user_model_kwargs: Optional[Dict[str, Any]] = None) -> None:
+    def __init__(self, model: str, provider: str, user_model_kwargs: Optional[Dict[str, Any]] = None, logfire_user_completion: bool = False) -> None:
         super().__init__()
         self.messages: List[Dict[str, Any]] = []
         self.model = model
         self.provider = provider
         self.user_model_kwargs = user_model_kwargs
+        self.logfire_user_completion = logfire_user_completion
         self.total_cost = 0.0
         self.reset_messages()
 
@@ -55,8 +56,9 @@ class LLMUserSimulationEnv(BaseUserSimulationEnv):
         message_content = ""
         retries = 3
         copied_messages = messages.copy()
-        litellm.callbacks = ["logfire"]
-        litellm.success_callback = ["logfire"]
+        if self.logfire_user_completion:
+            litellm.callbacks = ["logfire"]
+            litellm.success_callback = ["logfire"]
         while not message_content and retries > 0:
             res = litellm.completion(
                 model=self.model,
@@ -79,13 +81,14 @@ class LLMUserSimulationEnv(BaseUserSimulationEnv):
         if not message_content:
             raise ValueError("Failed to generate a non-empty user message")
 
-        logfire.info(
-            "Customer msg: {msg}",
-            msg=message_content,
-            messages=copied_messages,
-            completion=res,
-            _tags=["CustomerLLM"],
-        )
+        if not self.logfire_user_completion:    
+            logfire.info(
+                "Customer msg: {msg}",
+                msg=message_content,
+                messages=copied_messages,
+                completion=res,
+                _tags=["CustomerLLM"],
+            )
         return res, message
 
     def generate_next_message(self, messages: List[Dict[str, Any]]) -> str:
@@ -376,6 +379,7 @@ def load_user(
     model: Optional[str] = "gpt-4o",
     provider: Optional[str] = None,
     user_model_kwargs: Optional[Dict[str, Any]] = None,
+    logfire_user_completion: bool = False,
 ) -> BaseUserSimulationEnv:
     if isinstance(user_strategy, str):
         user_strategy = UserStrategy(user_strategy)
@@ -386,7 +390,7 @@ def load_user(
             raise ValueError("LLM user strategy requires a model")
         if provider is None:
             raise ValueError("LLM user strategy requires a model provider")
-        return LLMUserSimulationEnv(model=model, provider=provider, user_model_kwargs=user_model_kwargs)
+        return LLMUserSimulationEnv(model=model, provider=provider, user_model_kwargs=user_model_kwargs, logfire_user_completion=logfire_user_completion)
     elif user_strategy == UserStrategy.REACT:
         if model is None:
             raise ValueError("React user strategy requires a model")

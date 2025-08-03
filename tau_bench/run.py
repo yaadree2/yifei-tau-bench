@@ -43,7 +43,7 @@ def run(config: RunConfig, custom_json_encoder = None) -> List[EnvRunResult]:
         user_provider=config.user_model_provider,
         task_split=config.task_split,
         user_model_kwargs=config.user_model_kwargs,
-
+        logfire_user_completion=config.logfire_user_completion,
     )
     agent = agent_factory(
         tools_info=env.tools_info,

@@ -18,6 +18,7 @@ class MockAirlineDomainEnv(Env):
         task_split: str = "test",
         task_index: Optional[int] = None,
         user_model_kwargs: Optional[Dict[str, Any]] = None,
+        logfire_user_completion: bool = False,
     ):
         match task_split:
             case "test":
@@ -39,5 +40,6 @@ class MockAirlineDomainEnv(Env):
             user_provider=user_provider,
             task_index=task_index,
             user_model_kwargs=user_model_kwargs,
+            logfire_user_completion=logfire_user_completion,
         )
         self.terminate_tools = ["transfer_to_human_agents"]
