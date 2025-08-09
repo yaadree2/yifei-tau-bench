@@ -135,8 +135,18 @@ def run(config: RunConfig, custom_json_encoder = None) -> List[EnvRunResult]:
         return result
 
     with ThreadPoolExecutor(max_workers=config.max_concurrency) as executor:
-        res = list(executor.map(_run, idxs))
-        results.extend(res)
+        try:
+            res = list(executor.map(_run, idxs))
+            results.extend(res)
+        except KeyboardInterrupt:
+            print("\n🛑 First interrupt: letting running tasks finish. Press Ctrl+C again to force quit.")
+            try:
+                # This will wait for currently running tasks to complete
+                executor.shutdown(wait=True)
+            except KeyboardInterrupt:
+                print("\n⚡ Second interrupt: force quitting...")
+                # This will not wait for tasks to complete
+                executor.shutdown(wait=False)
 
     display_metrics(results)
 
