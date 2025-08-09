@@ -74,8 +74,8 @@ def run(config: RunConfig, custom_json_encoder = None) -> List[EnvRunResult]:
 
     thread_args = list(zip(idxs, range(len(idxs))))
 
-    def _run(thread_args) -> EnvRunResult:
-        idx, thread_idx = thread_args
+    def _run(args) -> EnvRunResult:
+        idx, thread_idx = args
         isolated_env = get_env(
             config.env,
             user_strategy=config.user_strategy,
