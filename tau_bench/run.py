@@ -72,7 +72,10 @@ def run(config: RunConfig, custom_json_encoder = None) -> List[EnvRunResult]:
     idxs = idxs * config.num_trials
     idx_to_trial = defaultdict(lambda: -1)
 
-    def _run(idx: int) -> EnvRunResult:
+    thread_args = list(zip(idxs, range(len(idxs))))
+
+    def _run(args) -> EnvRunResult:
+        idx, thread_idx = args
         isolated_env = get_env(
             config.env,
             user_strategy=config.user_strategy,
@@ -86,11 +89,12 @@ def run(config: RunConfig, custom_json_encoder = None) -> List[EnvRunResult]:
         idx_to_trial[idx] += 1
         trial = idx_to_trial[idx]
 
-        print(f"Running task {idx}")
+        print(f"Running task {idx} at thread {thread_idx}")
         try:
             res = agent.solve(
                 env=isolated_env,
                 task_index=idx,
+                thread_idx=thread_idx,
             )
             result = EnvRunResult(
                 task_id=idx,
@@ -135,7 +139,7 @@ def run(config: RunConfig, custom_json_encoder = None) -> List[EnvRunResult]:
         return result
 
     with ThreadPoolExecutor(max_workers=config.max_concurrency) as executor:
-        res = list(executor.map(_run, idxs))
+        res = list(executor.map(_run, thread_args))
         results.extend(res)
 
     display_metrics(results)
