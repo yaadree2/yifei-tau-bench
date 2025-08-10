@@ -15,8 +15,9 @@ from tau_bench.envs import get_env
 from tau_bench.agents.base import Agent
 from tau_bench.types import EnvRunResult, RunConfig
 from litellm import provider_list
+import litellm
 from tau_bench.envs.user import UserStrategy
-
+import httpx
 
 def run(config: RunConfig, custom_json_encoder = None) -> List[EnvRunResult]:
     assert config.env in ["retail", "airline"], "Only retail and airline envs are supported"
@@ -26,6 +27,15 @@ def run(config: RunConfig, custom_json_encoder = None) -> List[EnvRunResult]:
         assert config.agent_strategy in ["tool-calling", "act", "react", "few-shot"], "Invalid agent strategy"
     assert config.task_split in ["train", "test", "dev", "revised_test", "dev_test"], "Invalid task split"
     assert config.user_strategy in [item.value for item in UserStrategy], "Invalid user strategy"
+
+    max_connections = int(config.max_concurrency + config.max_concurrency * 0.1)
+    litellm.client_session = httpx.Client(
+        limits=httpx.Limits(
+            max_connections=max_connections,
+            max_keepalive_connections=max_connections / 10,
+        ),
+        timeout=httpx.Timeout(connect=5.0, read=30, write=30, pool=5),
+    )
 
     json_encoder = custom_json_encoder or json.JSONEncoder
 
