@@ -107,7 +107,7 @@ class LLMUserSimulationEnv(BaseUserSimulationEnv):
             "You are a user interacting with an agent. Your job is to follow the instructions in <instructions> while adhering to the rules in <rules>.\n\n"
             f"{instruction_display}"
             "<rules>\n"
-            "- You are roleplaying as a user who is the customer of the agent. You MUST NEVER break character.\n"
+            "- You are roleplaying as a user who is the customer of the agent. You MUST NEVER break character (i.e. do not roleplay as agent).\n"
             "- Just generate one line at a time to simulate the user's message.\n"
             "- Do not give away all the instruction at once. Only provide the information that is necessary for the current step.\n"
             "- Do not hallucinate information that is not provided in the instruction. For example, if the agent asks for the order id but it is not mentioned in the instruction, do not make up an order id, just say you do not remember or have it.\n"
