@@ -34,7 +34,7 @@ def run(config: RunConfig, custom_json_encoder = None) -> List[EnvRunResult]:
             max_connections=max_connections,
             max_keepalive_connections=int(max_connections * 0.3),
         ),
-        timeout=httpx.Timeout(connect=5.0, read=30, write=30, pool=5),
+        timeout=httpx.Timeout(connect=10.0, read=60, write=30, pool=30),
     )
 
     json_encoder = custom_json_encoder or json.JSONEncoder
