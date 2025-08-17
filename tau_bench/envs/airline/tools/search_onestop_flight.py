@@ -1,5 +1,6 @@
 # Copyright Sierra
 
+from datetime import datetime
 import json
 from typing import Any, Dict
 from tau_bench.envs.airline.tools.list_all_airports import AIRPORTS
@@ -62,6 +63,10 @@ class SearchOnestopFlightWithSort:
 class SearchOnestopFlightWithoutSort:
     @staticmethod
     def invoke(data: Dict[str, Any], origin: str, destination: str, date: str) -> str:
+        try:
+            datetime.strptime(date, '%Y-%m-%d')
+        except ValueError:
+            return f"Error: '{date}' is not a valid date. Please provide a valid date in YYYY-MM-DD format."
         if origin not in AIRPORTS:
             return f"Error: '{origin}' is not a valid airport. The origin must be a valid IATA airport code."
         if destination not in AIRPORTS:
