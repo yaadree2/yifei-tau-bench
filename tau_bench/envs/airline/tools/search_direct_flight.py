@@ -1,7 +1,9 @@
 # Copyright Sierra
 
 import json
+from datetime import datetime
 from typing import Any, Dict
+from tau_bench.envs.airline.tools.list_all_airports import AIRPORTS
 from tau_bench.envs.airline.tools.sort_flights import (
     SORT_ATTRIBUTE_STRING_VALUES,
     sort_flights,
@@ -38,6 +40,8 @@ class SearchDirectFlightWithSort:
         sort_by: str = "price_any_class",
     ) -> str:
         results = SearchDirectFlightWithoutSort.invoke(data, origin, destination, date)
+        if type(results) == str and "Error:" in results:
+            return results
         results = sort_flights(results, sort_by)
         return results
 
@@ -59,6 +63,15 @@ class SearchDirectFlightWithSort:
 class SearchDirectFlightWithoutSort:
     @staticmethod
     def invoke(data: Dict[str, Any], origin: str, destination: str, date: str) -> str:
+        try:
+            datetime.strptime(date, '%Y-%m-%d')
+        except ValueError:
+            return f"Error: '{date}' is not a valid date. Please provide a valid date in YYYY-MM-DD format."
+        
+        if origin not in AIRPORTS:
+            return f"Error: '{origin}' is not a valid airport. The origin must be a valid IATA airport code."
+        if destination not in AIRPORTS:
+            return f"Error: '{destination}' is not a valid airport. The destination must be a valid IATA airport code."
         flights = data["flights"]
         results = []
         for flight in flights.values():

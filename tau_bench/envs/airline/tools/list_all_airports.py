@@ -4,11 +4,7 @@ import json
 from typing import Any, Dict
 from tau_bench.envs.tool import Tool
 
-
-class ListAllAirports(Tool):
-    @staticmethod
-    def invoke(data: Dict[str, Any]) -> str:
-        airports = [
+AIRPORTS = [
             "SFO",
             "JFK",
             "LAX",
@@ -30,6 +26,10 @@ class ListAllAirports(Tool):
             "PHL",
             "LGA",
         ]
+
+class ListAllAirports(Tool):
+    @staticmethod
+    def invoke(data: Dict[str, Any]) -> str:
         cities = [
             "San Francisco",
             "New York",
@@ -52,7 +52,7 @@ class ListAllAirports(Tool):
             "Philadelphia",
             "LaGuardia",
         ]
-        return json.dumps({airport: city for airport, city in zip(airports, cities)})
+        return json.dumps({airport: city for airport, city in zip(AIRPORTS, cities)})
 
     @staticmethod
     def get_info() -> Dict[str, Any]:
