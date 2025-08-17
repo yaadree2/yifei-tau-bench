@@ -32,7 +32,7 @@ def run(config: RunConfig, custom_json_encoder = None) -> List[EnvRunResult]:
     litellm.client_session = httpx.Client(
         limits=httpx.Limits(
             max_connections=max_connections,
-            max_keepalive_connections=max_connections / 10,
+            max_keepalive_connections=int(max_connections * 0.3),
         ),
         timeout=httpx.Timeout(connect=5.0, read=30, write=30, pool=5),
     )
