@@ -39,6 +39,8 @@ class SearchDirectFlightWithSort:
         sort_by: str = "price_any_class",
     ) -> str:
         results = SearchDirectFlightWithoutSort.invoke(data, origin, destination, date)
+        if type(results) == str and "Error:" in results:
+            return results
         results = sort_flights(results, sort_by)
         return results
 
