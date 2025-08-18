@@ -28,7 +28,7 @@ def run(config: RunConfig, custom_json_encoder = None) -> List[EnvRunResult]:
     assert config.task_split in ["train", "test", "dev", "revised_test", "dev_test"], "Invalid task split"
     assert config.user_strategy in [item.value for item in UserStrategy], "Invalid user strategy"
 
-    max_connections = int(config.max_concurrency + config.max_concurrency * 0.1)
+    max_connections = int(config.max_concurrency + config.max_concurrency * 0.3)
     litellm.client_session = httpx.Client(
         limits=httpx.Limits(
             max_connections=max_connections,
