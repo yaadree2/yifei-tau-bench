@@ -19,6 +19,7 @@ def get_env(
         from tau_bench.envs.retail import MockRetailDomainEnv
 
         return MockRetailDomainEnv(
+            env_name=env_name,
             user_strategy=user_strategy,
             user_model=user_model,
             task_split=task_split,
@@ -29,6 +30,7 @@ def get_env(
         from tau_bench.envs.airline import MockAirlineDomainEnv
 
         return MockAirlineDomainEnv(
+            env_name=env_name,
             user_strategy=user_strategy,
             user_model=user_model,
             task_split=task_split,
