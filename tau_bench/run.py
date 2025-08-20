@@ -20,7 +20,7 @@ from tau_bench.envs.user import UserStrategy
 import httpx
 
 def run(config: RunConfig, custom_json_encoder = None) -> List[EnvRunResult]:
-    assert config.env in ["retail", "airline"], "Only retail and airline envs are supported"
+    assert config.env in ["retail", "airline", "consumer_debt"], "Only retail, airline, and consumer_debt envs are supported"
     assert config.model_provider in provider_list, "Invalid model provider"
     assert config.user_model_provider in provider_list, "Invalid user model provider"
     if config.agent_strategy is not None:
