@@ -12,6 +12,7 @@ from tau_bench.envs.user import UserStrategy
 class MockRetailDomainEnv(Env):
     def __init__(
         self,
+        env_name: str,
         user_strategy: Union[str, UserStrategy] = UserStrategy.LLM,
         user_model: str = "gpt-4o",
         user_provider: Optional[str] = None,
@@ -28,6 +29,7 @@ class MockRetailDomainEnv(Env):
             case _:
                 raise ValueError(f"Unknown task split: {task_split}")
         super().__init__(
+            env_name=env_name,
             data_load_func=load_data,
             tools=ALL_TOOLS,
             tasks=tasks,

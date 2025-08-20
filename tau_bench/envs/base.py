@@ -44,6 +44,7 @@ def consistent_hash(
 class Env(object):
     def __init__(
         self,
+        env_name: str,
         data_load_func: Callable[[], Dict[str, Any]],
         tools: List[Type[Tool]],
         tasks: List[Task],
@@ -57,6 +58,7 @@ class Env(object):
         logfire_user_completion: bool = False,
     ) -> None:
         super().__init__()
+        self.env_name = env_name
         self.data_load_func = data_load_func
         self.data = data_load_func()
         self.tools_map: Dict[str, Type[Tool]] = {
