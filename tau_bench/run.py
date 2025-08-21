@@ -18,6 +18,8 @@ from litellm import provider_list
 import litellm
 from tau_bench.envs.user import UserStrategy
 import httpx
+from openai import DefaultHttpxClient
+
 
 def run(config: RunConfig, custom_json_encoder = None) -> List[EnvRunResult]:
     assert config.env in ["retail", "airline", "consumer_debt"], "Only retail, airline, and consumer_debt envs are supported"
@@ -29,7 +31,7 @@ def run(config: RunConfig, custom_json_encoder = None) -> List[EnvRunResult]:
     assert config.user_strategy in [item.value for item in UserStrategy], "Invalid user strategy"
 
     max_connections = int(config.max_concurrency + config.max_concurrency * 0.3)
-    litellm.client_session = httpx.Client(
+    litellm.client_session = DefaultHttpxClient(
         limits=httpx.Limits(
             max_connections=max_connections,
             max_keepalive_connections=int(max_connections * 0.3),
