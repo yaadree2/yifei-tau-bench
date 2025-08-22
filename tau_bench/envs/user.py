@@ -56,9 +56,7 @@ class LLMUserSimulationEnv(BaseUserSimulationEnv):
         message_content = ""
         retries = 3
         copied_messages = messages.copy()
-        if self.logfire_user_completion:
-            litellm.callbacks = ["logfire"]
-            litellm.success_callback = ["logfire"]
+
         while not message_content and retries > 0:
             res = litellm.completion(
                 model=self.model,
