@@ -42,6 +42,7 @@ def run(config: RunConfig, custom_json_encoder = None) -> List[EnvRunResult]:
         ),
         timeout=httpx.Timeout(connect=10.0, read=60, write=30, pool=30),
     )
+    litellm.request_timeout = 70
 
     json_encoder = custom_json_encoder or json.JSONEncoder
 
