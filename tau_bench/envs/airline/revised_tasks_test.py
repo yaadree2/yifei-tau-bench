@@ -44,7 +44,7 @@ TASKS = [
             "1. change the flights on the return leg (i.e. Denver (DEN) to Houston (IAH)) to be on the same day as the outbound flight (May 27). These new flights must have the shortest total travel time (including layover time) possible. "
             "Also, the new flights must absolutely be in economy cabin (no basic economy), regardless of lower prices in other cabins.\n"
             "2. add one additional checked bag, so ending with two total checked bags.\n"
-            "3. as payment method for both 1. and 2., use the gift card with the smallest balance possible that covers the payments.\n"
+            "3. as payment method for both 1. and 2., use the gift card with the smallest balance possible that covers the payments. Note that payments for 1. and 2. will be paid separately.\n"
             "You are reactive to the agent and will not say anything that is not asked. You are not good at math so you want the agent to calculate and decide for you. "
             "Try to paraphrase instead of repeating this instruction. It is urgent."
         ),
